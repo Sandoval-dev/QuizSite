@@ -1,0 +1,268 @@
+@model QuestionCreateModel
+
+@{
+    ViewData["Title"] = "Create New Question";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    :root {
+        --charcoal: #264653;
+        --persian-green: #2a9d8f;
+        --saffron: #e9c46a;
+        --sandy-brown: #f4a261;
+        --burnt-sienna: #e76f51;
+        --light-bg: #f8f9fa;
+    }
+
+    /* Base Styles */
+    .form-container {
+        background-color: white;
+        border-radius: 12px;
+        padding: 2.5rem;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+    }
+
+    .form-container:hover {
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .page-title {
+        font-weight: 700;
+        color: var(--charcoal);
+        position: relative;
+        padding-bottom: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .page-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 60px;
+        height: 3px;
+        background: linear-gradient(90deg, var(--persian-green), var(--sandy-brown));
+    }
+
+    /* Form Elements */
+    .form-label {
+        font-weight: 600;
+        color: var(--charcoal);
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control, .form-select {
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        border: 1px solid #ced4da;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--persian-green);
+        box-shadow: 0 0 0 0.25rem rgba(42, 157, 143, 0.25);
+    }
+
+    /* Option Items */
+    .option-container {
+        margin-bottom: 1rem;
+        animation: fadeInUp 0.4s ease-out;
+    }
+
+    .option-input-group {
+        transition: all 0.3s ease;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .option-input-group:hover {
+        transform: translateX(5px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .option-radio {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+    }
+
+    .option-radio:checked {
+        background-color: var(--persian-green);
+        border-color: var(--persian-green);
+    }
+
+    .input-group-text {
+        background-color: var(--light-bg);
+        border: none;
+        padding: 0 1rem;
+    }
+
+    /* Buttons */
+    .btn-submit {
+        background-color: var(--persian-green);
+        color: white;
+        border: none;
+        padding: 0.75rem 2rem;
+        font-weight: 500;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 6px rgba(42, 157, 143, 0.3);
+    }
+
+    .btn-submit:hover {
+        background-color: var(--sandy-brown);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(244, 162, 97, 0.4);
+    }
+
+    .btn-cancel {
+        border-radius: 8px;
+        padding: 0.75rem 2rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-cancel:hover {
+        background-color: rgba(108, 117, 125, 0.1);
+    }
+
+    /* Validation */
+    .text-danger {
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
+        display: block;
+    }
+
+    .input-validation-error {
+        border-color: var(--burnt-sienna);
+    }
+
+    .input-validation-error:focus {
+        box-shadow: 0 0 0 0.25rem rgba(231, 111, 81, 0.25);
+    }
+
+    /* Animations */
+    .fade-in {
+        animation: fadeIn 0.6s ease-out;
+    }
+
+    @@keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @@keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .form-container {
+            padding: 1.75rem;
+        }
+    }
+</style>
+
+<div class="container mt-4 fade-in">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="page-title">📝 Create New Question</h1>
+        <div class="badge rounded-pill py-2 px-3" style="background-color: var(--charcoal); color: white;">
+            <i class="fas fa-question-circle me-1"></i> New
+        </div>
+    </div>
+
+    <div class="form-container">
+        <form asp-action="Create" method="post" novalidate>
+            <!-- Question Text -->
+            <div class="mb-4">
+                <label asp-for="Text" class="form-label">Question Text</label>
+                <input asp-for="Text" class="form-control" placeholder="Enter your question here..." />
+                <span asp-validation-for="Text" class="text-danger"></span>
+            </div>
+
+            <!-- Category -->
+            <div class="mb-4">
+                <label asp-for="CategoryId" class="form-label">Category</label>
+                <select asp-for="CategoryId" asp-items="Model.Categories" class="form-select">
+                    <option value="">-- Select Category --</option>
+                </select>
+                <span asp-validation-for="CategoryId" class="text-danger"></span>
+            </div>
+
+            <!-- Answer Options -->
+            <div class="mb-4">
+                <label class="form-label d-flex align-items-center">
+                    <i class="fas fa-list-ol me-2" style="color: var(--sandy-brown);"></i>
+                    Answer Options
+                </label>
+                
+                @for (int i = 0; i < Model.Options.Count; i++)
+                {
+                    <div class="option-container" style="animation-delay: @(i * 0.1)s;">
+                        <div class="input-group option-input-group">
+                            <div class="input-group-text">
+                                <input type="radio" 
+                                       id="correctOption_@i" 
+                                       name="CorrectOptionIndex" 
+                                       value="@i"
+                                       class="form-check-input option-radio"
+                                       @(Model.CorrectOptionIndex == i ? "checked" : "") />
+                            </div>
+                            <input name="Options[@i].Text" 
+                                   value="@Model.Options[i].Text" 
+                                   class="form-control"
+                                   placeholder="Option @(i + 1)" />
+                        </div>
+                        <span asp-validation-for="Options[@i].Text" class="text-danger"></span>
+                    </div>
+                }
+                
+                <small class="form-text text-muted mt-2">
+                    <i class="fas fa-info-circle me-1"></i> Select the correct answer by clicking the radio button
+                </small>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="d-flex justify-content-end mt-4">
+                <a asp-action="Index" class="btn btn-outline-secondary btn-cancel me-2">
+                    <i class="fas fa-times me-1"></i> Cancel
+                </a>
+                <button type="submit" class="btn btn-submit">
+                    <i class="fas fa-save me-1"></i> Save Question
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        // Add animation to radio buttons when checked
+        document.querySelectorAll('.option-radio').forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.checked) {
+                    this.closest('.option-input-group').style.boxShadow = '0 0 0 3px rgba(42, 157, 143, 0.3)';
+                    setTimeout(() => {
+                        this.closest('.option-input-group').style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
+                    }, 300);
+                }
+            });
+        });
+
+        // Add focus effects to form inputs
+        document.querySelectorAll('.form-control').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'translateX(5px)';
+            });
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'translateX(0)';
+            });
+        });
+    </script>
+}

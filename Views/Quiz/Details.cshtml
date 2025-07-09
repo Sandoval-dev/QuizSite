@@ -1,0 +1,297 @@
+@model QuizSite.Data.Quiz
+
+@{
+    ViewData["Title"] = "Quiz Details";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var currentPage = ViewBag.CurrentPage as int? ?? 1;
+    var totalPages = ViewBag.TotalPages as int? ?? 1;
+    var quizId = ViewBag.QuizId as int? ?? 0;
+}
+
+<style>
+    :root {
+        --charcoal: #264653;
+        --persian-green: #2a9d8f;
+        --saffron: #e9c46a;
+        --sandy-brown: #f4a261;
+        --burnt-sienna: #e76f51;
+        --light-bg: #f8f9fa;
+    }
+
+    /* Header Section */
+    .quiz-header {
+        background-color: white;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+        border-left: 4px solid var(--persian-green);
+    }
+
+    .quiz-title {
+        font-weight: 700;
+        color: var(--charcoal);
+        position: relative;
+        padding-bottom: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .quiz-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 60px;
+        height: 3px;
+        background: linear-gradient(90deg, var(--persian-green), var(--sandy-brown));
+    }
+
+    /* Question Cards */
+    .question-card {
+        background-color: #fff;
+        border-radius: 12px;
+        padding: 1.75rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+    }
+
+    .question-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    .question-title {
+        font-weight: 600;
+        color: var(--charcoal);
+        margin-bottom: 1.25rem;
+        position: relative;
+        padding-left: 1.5rem;
+    }
+
+    .question-title::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 8px;
+        height: 8px;
+        background-color: var(--persian-green);
+        border-radius: 50%;
+    }
+
+    .question-number {
+        display: inline-block;
+        width: 28px;
+        height: 28px;
+        background-color: var(--saffron);
+        color: var(--charcoal);
+        border-radius: 50%;
+        text-align: center;
+        line-height: 28px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        margin-right: 0.75rem;
+    }
+
+    /* Options */
+    .option-item {
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+    }
+
+    .option-item:hover {
+        transform: translateX(5px);
+    }
+
+    .option-correct {
+        background-color: rgba(40, 167, 69, 0.1);
+        border-left: 4px solid #28a745;
+        color: #155724;
+    }
+
+    .option-incorrect {
+        background-color: var(--light-bg);
+        color: #495057;
+    }
+
+    .correct-badge {
+        background-color: #28a745;
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+        margin-left: 0.5rem;
+    }
+
+    /* Pagination */
+    .pagination .page-item .page-link {
+        color: var(--charcoal);
+        border: none;
+        margin: 0 3px;
+        border-radius: 8px !important;
+        transition: all 0.3s ease;
+    }
+
+    .pagination .page-item.active .page-link {
+        background: linear-gradient(135deg, var(--persian-green), var(--sandy-brown));
+        color: white;
+        box-shadow: 0 2px 6px rgba(42, 157, 143, 0.3);
+    }
+
+    .pagination .page-item:not(.active) .page-link:hover {
+        background-color: rgba(38, 70, 83, 0.1);
+    }
+
+    /* Empty State */
+    .empty-state {
+        padding: 3rem;
+        background-color: var(--light-bg);
+        border-radius: 12px;
+        text-align: center;
+        border: 2px dashed rgba(0,0,0,0.1);
+    }
+
+    /* Animations */
+    .fade-in {
+        animation: fadeIn 0.6s ease-out;
+    }
+
+    @@keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-option {
+        animation: fadeInUp 0.4s ease-out;
+    }
+
+    @@keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .quiz-header {
+            padding: 1.5rem;
+        }
+        
+        .question-card {
+            padding: 1.25rem;
+        }
+    }
+</style>
+
+<div class="container mt-4 fade-in">
+    <!-- Quiz Header -->
+    <div class="quiz-header">
+        <h1 class="quiz-title">📝 @Model.Title</h1>
+        <div class="row">
+            <div class="col-md-6">
+                <p class="mb-2"><strong><i class="fas fa-align-left me-2" style="color: var(--persian-green);"></i>Description:</strong> @Model.Description</p>
+            </div>
+            <div class="col-md-6">
+                <p class="mb-2"><strong><i class="fas fa-tag me-2" style="color: var(--sandy-brown);"></i>Category:</strong> 
+                    <span class="badge rounded-pill py-2 px-3" style="background-color: var(--persian-green);">@Model.category?.Name</span>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Questions Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="mb-0" style="font-weight: 600; color: var(--charcoal);">
+            <i class="fas fa-question-circle me-2" style="color: var(--sandy-brown);"></i>
+            Questions <span class="text-muted" style="font-size: 1rem;">(Page @currentPage of @totalPages)</span>
+        </h4>
+        <div class="badge rounded-pill py-2 px-3" style="background-color: var(--charcoal); color: white;">
+            Total Questions: @ViewBag.TotalQuestionCount
+        </div>
+    </div>
+
+    @if (!Model.QuizQuestions.Any())
+    {
+        <div class="empty-state">
+            <i class="fas fa-question fa-3x mb-3" style="color: var(--sandy-brown); opacity: 0.7;"></i>
+            <h5 class="mb-2">No Questions Found</h5>
+            <p class="text-muted">This quiz doesn't have any questions yet.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @for (int i = 0; i < Model.QuizQuestions.Count; i++)
+            {
+                var qq = Model.QuizQuestions[i];
+                var question = qq.Question;
+                var questionNumber = (i + 1) + (currentPage - 1) * 4;
+
+                <div class="col-lg-6">
+                    <div class="question-card">
+                        <div class="question-title">
+                            <span class="question-number">@questionNumber</span>
+                            @question.Text
+                        </div>
+                        <div>
+                            @for (int j = 0; j < question.Options.Count; j++)
+                            {
+                                var option = question.Options[j];
+                                var isCorrect = (j == question.CorrectOptionIndex);
+                                <div class="option-item @(isCorrect ? "option-correct" : "option-incorrect") animate-option" style="animation-delay: @(j * 0.1)s">
+                                    @option.Text
+                                    @if (isCorrect)
+                                    {
+                                        <span class="badge correct-badge rounded-pill float-end">
+                                            <i class="fas fa-check"></i> Correct
+                                        </span>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <!-- Pagination -->
+    @if (totalPages > 1)
+    {
+        <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                    <a class="page-link" asp-action="Details" asp-route-id="@quizId" asp-route-page="@(currentPage - 1)">
+                        <i class="fas fa-chevron-left me-1"></i> Previous
+                    </a>
+                </li>
+                @for (int i = 1; i <= totalPages; i++)
+                {
+                    <li class="page-item @(i == currentPage ? "active" : "")">
+                        <a class="page-link" asp-action="Details" asp-route-id="@quizId" asp-route-page="@i">@i</a>
+                    </li>
+                }
+                <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                    <a class="page-link" asp-action="Details" asp-route-id="@quizId" asp-route-page="@(currentPage + 1)">
+                        Next <i class="fas fa-chevron-right ms-1"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        // Add animation to question cards when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.question-card');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+    </script>
+}

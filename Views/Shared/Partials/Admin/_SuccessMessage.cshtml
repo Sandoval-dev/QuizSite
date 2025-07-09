@@ -1,0 +1,37 @@
+@if (TempData["SuccessMessage"] != null)
+{
+    <div id="successAlert" class="alert d-flex align-items-center justify-content-between fade show" role="alert"
+         style="background-color: var(--persian-green); color: white; border-radius: 10px; padding: 1rem 1.25rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-top: 1.5rem;">
+
+        <div class="d-flex align-items-center">
+            <i class="fa-solid fa-circle-check me-2" style="color: white; font-size: 1.2rem;"></i>
+            <span>@TempData["SuccessMessage"]</span>
+        </div>
+
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+
+        <style>
+            :root {
+                --charcoal: #264653;
+                --persian-green: #2a9d8f;
+                --saffron: #e9c46a;
+                --sandy-brown: #f4a261;
+                --burnt-sienna: #e76f51;
+            }
+        </style>
+    </div>
+
+    <script>
+        setTimeout(function () {
+            var alertEl = document.getElementById('successAlert');
+            if (alertEl) {
+                alertEl.classList.remove('show');
+                alertEl.classList.add('fade');
+                alertEl.addEventListener('transitionend', function () {
+                    alertEl.remove();
+                });
+                alertEl.style.opacity = '0';
+            }
+        }, 2000); // 2 saniye sonra yok et
+    </script>
+}

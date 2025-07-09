@@ -1,0 +1,461 @@
+@model List<QuizStatsViewModel>
+@{
+    ViewData["Title"] = "Quiz Detayları";
+    Layout = "~/Views/Shared/_SiteLayout.cshtml";
+    var quizTitle = Model.FirstOrDefault()?.QuizTitle;
+}
+
+<style>
+    :root {
+        --primary-color: #4361ee;
+        --secondary-color: #3f37c9;
+        --gold-color: #ffd700;
+        --silver-color: #c0c0c0;
+        --bronze-color: #cd7f32;
+        --success-color: #4cc9f0;
+        --danger-color: #f72585;
+        --light-color: #f8f9fa;
+        --dark-color: #212529;
+        --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    .quiz-details-container {
+        padding: 2rem 0;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .page-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: var(--dark-color);
+        margin-bottom: 1.5rem;
+        position: relative;
+        display: inline-block;
+    }
+
+    .page-title:after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 60px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+        border-radius: 2px;
+    }
+
+    .leaderboard-container {
+        margin-bottom: 3rem;
+    }
+
+    .podium {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .podium-item {
+        text-align: center;
+        flex: 1;
+        max-width: 200px;
+        position: relative;
+        transition: var(--transition);
+    }
+
+    .podium-item:hover {
+        transform: translateY(-5px);
+    }
+
+    .podium-1 {
+        order: 2;
+        height: 180px;
+        background: linear-gradient(to bottom, var(--gold-color), #e6c200);
+    }
+
+    .podium-2 {
+        order: 1;
+        height: 140px;
+        background: linear-gradient(to bottom, var(--silver-color), #a8a8a8);
+    }
+
+    .podium-3 {
+        order: 3;
+        height: 120px;
+        background: linear-gradient(to bottom, var(--bronze-color), #b87333);
+    }
+
+    .podium-rank {
+        font-size: 2rem;
+        font-weight: 700;
+        color: white;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        margin-top: 1rem;
+    }
+
+    .podium-user {
+        position: absolute;
+        bottom: -25px;
+        left: 0;
+        right: 0;
+        font-weight: 600;
+        color: var(--dark-color);
+    }
+
+    .podium-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: white;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        position: absolute;
+        top: -30px;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 3px solid;
+    }
+
+    .podium-1 .podium-avatar {
+        border-color: var(--gold-color);
+    }
+
+    .podium-2 .podium-avatar {
+        border-color: var(--silver-color);
+    }
+
+    .podium-3 .podium-avatar {
+        border-color: var(--bronze-color);
+    }
+
+    .results-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 10px;
+        margin-top: 2rem;
+    }
+
+    .results-table thead th {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 1rem;
+        font-weight: 500;
+        text-align: left;
+        position: sticky;
+        top: 0;
+    }
+
+    .results-table tbody tr {
+        background: white;
+        border-radius: 8px;
+        box-shadow: var(--card-shadow);
+        transition: var(--transition);
+    }
+
+    .results-table tbody tr:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .results-table td {
+        padding: 1.2rem 1rem;
+        vertical-align: middle;
+    }
+
+    .results-table tr:first-child td {
+        border-top: none;
+    }
+
+    .rank-cell {
+        font-weight: 700;
+        color: var(--dark-color);
+        text-align: center;
+        width: 50px;
+    }
+
+    .top-3 {
+        font-size: 1.2rem;
+    }
+
+    .top-1 .rank-cell {
+        color: var(--gold-color);
+    }
+
+    .top-2 .rank-cell {
+        color: var(--silver-color);
+    }
+
+    .top-3 .rank-cell {
+        color: var(--bronze-color);
+    }
+
+    .user-cell {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-color), var(--success-color));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+    }
+
+    .correct-cell {
+        color: var(--success-color);
+        font-weight: 600;
+    }
+
+    .wrong-cell {
+        color: var(--danger-color);
+        font-weight: 600;
+    }
+
+    .blank-cell {
+        color: #6c757d;
+    }
+
+    .date-cell {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        background: white;
+        border-radius: 12px;
+        box-shadow: var(--card-shadow);
+    }
+
+    .empty-icon {
+        font-size: 3rem;
+        color: #adb5bd;
+        margin-bottom: 1rem;
+    }
+
+    /* Animations */
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes bounce {
+
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+
+    .animate-fade {
+        animation: fadeIn 0.6s ease forwards;
+    }
+
+    .animate-bounce {
+        animation: bounce 1.5s infinite;
+    }
+
+    .delay-1 {
+        animation-delay: 0.1s;
+    }
+
+    .delay-2 {
+        animation-delay: 0.2s;
+    }
+
+    .delay-3 {
+        animation-delay: 0.3s;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .podium {
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .podium-item {
+            width: 80%;
+            height: 80px !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .podium-1 {
+            order: 1;
+        }
+
+        .podium-2 {
+            order: 2;
+        }
+
+        .podium-3 {
+            order: 3;
+        }
+
+        .podium-avatar {
+            position: static;
+            transform: none;
+            margin-right: 1rem;
+            width: 50px;
+            height: 50px;
+        }
+
+        .podium-user {
+            position: static;
+            margin-left: 1rem;
+        }
+
+        .results-table {
+            display: block;
+            overflow-x: auto;
+        }
+    }
+</style>
+
+<div class="quiz-details-container animate-fade">
+    <div class="container">
+        <h1 class="page-title">@quizTitle - Sonuçlar</h1>
+
+        @if (!Model.Any())
+        {
+            <div class="empty-state animate-fade delay-1">
+                <div class="empty-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <h3>Henüz katılımcı yok</h3>
+                <p class="text-muted">Bu quizi henüz kimse çözmemiş. İlk olmak ister misiniz?</p>
+            </div>
+        }
+        else
+        {
+            <div class="leaderboard-container">
+                @if (Model.Count >= 3)
+                {
+                    <div class="podium">
+
+                        <div class="podium-item podium-2 animate-fade delay-1">
+                            <div class="podium-avatar">
+                                <i class="fas fa-medal"></i>
+                            </div>
+                            <div class="podium-rank">2</div>
+                            <div class="podium-user">@Model[1].UserName.Substring(0, Model[1].UserName.IndexOf("@"))</div>
+                        </div>
+
+
+                        <div class="podium-item podium-1 animate-fade delay-2 animate-bounce">
+                            <div class="podium-avatar">
+                                <i class="fas fa-crown"></i>
+                            </div>
+                            <div class="podium-rank">1</div>
+                            <div class="podium-user">@Model[0].UserName.Substring(0, Model[0].UserName.IndexOf("@"))</div>
+                        </div>
+
+
+                        <div class="podium-item podium-3 animate-fade delay-3">
+                            <div class="podium-avatar">
+                                <i class="fas fa-medal"></i>
+                            </div>
+                            <div class="podium-rank">3</div>
+                            <div class="podium-user">@Model[2].UserName.Substring(0, Model[2].UserName.IndexOf("@"))</div>
+                        </div>
+                    </div>
+                }
+
+                <div class="table-responsive">
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 60px; text-align: center;">#</th>
+                                <th>Katılımcı</th>
+                                <th style="text-align: center;">Doğru</th>
+                                <th style="text-align: center;">Yanlış</th>
+                                <th style="text-align: center;">Boş</th>
+                                <th>Son Çözüm</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.Count; i++)
+                            {
+                                var row = Model[i];
+                                var rankClass = i < 3 ? $"top-{i + 1}" : "";
+                                var medalIcon = i == 0 ? "🥇" : i == 1 ? "🥈" : i == 2 ? "🥉" : "";
+
+                                <tr class="@rankClass animate-fade delay-@((i % 3) + 1)">
+                                    <td class="rank-cell">
+                                        @if (i < 3)
+                                        {
+                                            @medalIcon
+                                        }
+                                        else
+                                        {
+                                            @(i + 1)
+                                        }
+                                    </td>
+                                    <td class="user-cell">
+                                        <div class="user-avatar">
+                                            @row.UserName.Substring(0, 1).ToUpper()
+                                        </div>
+                                        <div>
+                                            @row.UserName.Substring(0, row.UserName.IndexOf("@"))
+                                            @if (i == 0)
+                                            {
+                                                <span class="badge bg-warning text-dark ms-2">Şampiyon</span>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td class="correct-cell" style="text-align: center;">@row.Correct</td>
+                                    <td class="wrong-cell" style="text-align: center;">@row.Wrong</td>
+                                    <td class="blank-cell" style="text-align: center;">@row.Blank</td>
+                                    <td class="date-cell">@row.LastTakenAt?.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Add animation to top 3 winners
+        document.addEventListener('DOMContentLoaded', function () {
+            const winners = document.querySelectorAll('.podium-item');
+
+            winners.forEach((winner, index) => {
+                setTimeout(() => {
+                    winner.style.opacity = 1;
+                    winner.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+        });
+    </script>
+}

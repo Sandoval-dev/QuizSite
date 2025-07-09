@@ -1,0 +1,771 @@
+﻿@{
+    ViewData["Title"] = "Ana Sayfa";
+    Layout = "~/Views/Shared/_SiteLayout.cshtml";
+}
+
+<style>
+    :root {
+        --charcoal: #264653;
+        --persian-green: #2a9d8f;
+        --saffron: #e9c46a;
+        --sandy-brown: #f4a261;
+        --burnt-sienna: #e76f51;
+        --white: #fff;
+        --gray-light: #f8f9fa;
+        --gray-medium: #6c757d;
+        --dark-blue: #1a3a5f;
+    }
+
+    /* Hero Slider */
+    .hero-slider {
+        position: relative;
+        height: 20vh;
+        min-height: 600px;
+        overflow: hidden;
+    }
+
+    .slide {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        opacity: 0;
+        transition: opacity 1.5s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: white;
+    }
+
+    .slide.active {
+        opacity: 1;
+    }
+
+    .slide-content {
+        max-width: 800px;
+        padding: 0 2rem;
+        z-index: 2;
+    }
+
+    .slide::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.4);
+    }
+
+    .slide-1 {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://source.unsplash.com/random/1920x1080/?quiz,exam');
+    }
+
+    .slide-2 {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://source.unsplash.com/random/1920x1080/?education,learning');
+    }
+
+    .slide-3 {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://source.unsplash.com/random/1920x1080/?brain,mind');
+    }
+
+    .slider-nav {
+        position: absolute;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 5;
+        display: flex;
+        gap: 1rem;
+    }
+
+    .slider-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.5);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .slider-dot.active {
+        background: var(--saffron);
+        transform: scale(1.3);
+    }
+
+    .quiz-logo {
+        font-size: 4rem;
+        font-weight: 800;
+        color: var(--saffron);
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        margin-bottom: 1rem;
+        position: relative;
+        display: inline-block;
+    }
+
+    .quiz-logo::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 4px;
+        background: var(--saffron);
+        border-radius: 2px;
+    }
+
+    .hero-icon {
+        font-size: 5rem;
+        color: white;
+        margin-bottom: 1.5rem;
+        animation: bounce 2s infinite;
+    }
+
+    @@keyframes bounce {
+
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-15px);
+        }
+    }
+
+    .hero-lead {
+        font-size: 1.3rem;
+        max-width: 700px;
+        margin: 0 auto 2rem;
+        opacity: 0.9;
+    }
+
+    /* Features Section */
+    .features-section {
+        padding: 5rem 0;
+        background: linear-gradient(to bottom, #f9fafb, #f0f4f8);
+        position: relative;
+    }
+
+    .section-title {
+        text-align: center;
+        margin-bottom: 3rem;
+        position: relative;
+    }
+
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background: var(--persian-green);
+        border-radius: 2px;
+    }
+
+    .feature-box {
+        background-color: white;
+        border-radius: 1rem;
+        padding: 2.5rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        text-align: center;
+        height: 100%;
+        border: 1px solid rgba(0, 0, 0, 0.03);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .feature-box::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(90deg, var(--persian-green), var(--saffron));
+    }
+
+    .feature-box:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    }
+
+    .feature-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1.5rem;
+        color: var(--persian-green);
+        transition: transform 0.3s ease;
+    }
+
+    .feature-box:hover .feature-icon {
+        transform: scale(1.1);
+    }
+
+    .feature-title {
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--charcoal);
+    }
+
+    .feature-text {
+        color: var(--gray-medium);
+        line-height: 1.6;
+    }
+
+
+    /* Categories Section */
+    .categories-section {
+        padding: 5rem 0;
+        background: white;
+    }
+
+    .category-badge {
+        padding: 0.5rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: inline-block;
+        margin: 0.5rem;
+    }
+
+    .category-badge:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .stats-section {
+        padding: 5rem 0;
+        background: linear-gradient(135deg, #2a9d8f 0%, #264653 100%);
+        color: white;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 2px;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .stats-section .container {
+        max-width: 1140px;
+        /* Bootstrap max-width */
+        margin: 0 auto;
+    }
+
+    .stat-card {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        padding: 2.5rem 1.5rem;
+        text-align: center;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        height: 100%;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .stat-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: #e9c46a;
+        opacity: 0.9;
+        transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover .stat-icon {
+        transform: scale(1.2);
+    }
+
+    .stat-card h3 {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(to right, #fff, #e9c46a);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        position: relative;
+        display: inline-block;
+    }
+
+    .stat-card h3::after {
+        content: '+';
+        position: absolute;
+        right: -20px;
+        top: 10px;
+        font-size: 1.5rem;
+        color: #e9c46a;
+    }
+
+    .stat-card p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        margin: 0;
+        position: relative;
+        display: inline-block;
+    }
+
+    .stat-card p::after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 40px;
+        height: 2px;
+        background: #e9c46a;
+        border-radius: 2px;
+    }
+
+    /* Responsive */
+    @@media
+    (max-width: 991px) {
+        .stat-card {
+            margin-bottom: 1.5rem;
+        }
+    }
+
+    @@media
+    (max-width: 576px) {
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .stat-card h3 {
+            font-size: 2.2rem;
+        }
+
+        .stat-card p {
+            font-size: 1rem;
+        }
+    }
+
+    /* Quiz Cards */
+    .quizzes-section {
+        padding: 5rem 0;
+        background: var(--gray-light);
+    }
+
+    .quiz-card {
+        border-radius: 1rem;
+        background: white;
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        height: 100%;
+        border: none;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .quiz-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(90deg, var(--saffron), var(--burnt-sienna));
+    }
+
+    .quiz-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-body {
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .card-title {
+        font-weight: 700;
+        color: var(--charcoal);
+        margin-bottom: 1rem;
+    }
+
+    .card-text {
+        color: var(--gray-medium);
+        flex-grow: 1;
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+    }
+
+    .quiz-category {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--persian-green);
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .quiz-category i {
+        margin-right: 8px;
+    }
+
+    /* Buttons */
+    .btn-quiz {
+        background: linear-gradient(135deg, var(--saffron), var(--sandy-brown));
+        color: var(--charcoal);
+        font-weight: 600;
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(244, 162, 97, 0.3);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-quiz:hover {
+        background: linear-gradient(135deg, var(--sandy-brown), var(--burnt-sienna));
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(231, 111, 81, 0.4);
+    }
+
+    .btn-quiz i {
+        margin-left: 8px;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .quiz-logo {
+            font-size: 3rem;
+        }
+
+        .hero-icon {
+            font-size: 4rem;
+        }
+
+        .feature-box {
+            padding: 2rem;
+        }
+
+        .section-title::after {
+            bottom: -10px;
+        }
+
+        .hero-slider {
+            height: 80vh;
+            min-height: 500px;
+        }
+    }
+</style>
+
+<!-- Stats Section -->
+<section class="stats-section">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h3 class="mb-3 stat-number">@ViewBag.TotalQuizzes</h3>
+                    <p class="mb-0">Toplam Quiz</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-question-circle"></i>
+                    </div>
+                    <h3 class="mb-3 stat-number">@ViewBag.TotalQuestions</h3>
+                    <p class="mb-0">Toplam Soru</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="mb-3 stat-number">@ViewBag.ActiveUsers</h3>
+                    <p class="mb-0">Aktif Kullanıcı</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h3 class="mb-3 stat-number">@ViewBag.QuizzesSolved</h3>
+                    <p class="mb-0">Çözülen Quiz</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Hero Slider Section -->
+<section class="hero-slider">
+    <div class="slide slide-1 active">
+        <div class="slide-content">
+            <div class="hero-icon">
+                <i class="fa-solid fa-brain"></i>
+            </div>
+            <h1 class="quiz-logo">Quiz360</h1>
+            <p class="hero-lead">Bilgini test et, öğrenmeye devam et. Geniş quiz koleksiyonumuzla kendini geliştir!</p>
+            <a asp-controller="Quiz" asp-action="List" class="btn btn-quiz px-4 py-3">
+                Quizleri Keşfet <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="slide slide-2">
+        <div class="slide-content">
+            <div class="hero-icon">
+                <i class="fa-solid fa-trophy"></i>
+            </div>
+            <h1 class="quiz-logo">Liderlik Tablosu</h1>
+            <p class="hero-lead">Diğer kullanıcılarla yarışın ve sıralamada tepeye çıkın</p>
+            <a asp-controller="Stats" asp-action="List" class="btn btn-quiz px-4 py-3">
+                Sıralamayı Gör <i class="fas fa-chart-bar"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="slide slide-3">
+        <div class="slide-content">
+            <div class="hero-icon">
+                <i class="fa-solid fa-lightbulb"></i>
+            </div>
+            <h1 class="quiz-logo">Kendini gün ve gün karşılaştır</h1>
+            <p class="hero-lead">Her gün ileriye doğru ilerle</p>
+            <a asp-controller="Stats" asp-action="Index" class="btn btn-quiz px-4 py-3">
+                İstatistiklerim <i class="fas fa-calendar-day"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="slider-nav">
+        <div class="slider-dot active" data-slide="0"></div>
+        <div class="slider-dot" data-slide="1"></div>
+        <div class="slider-dot" data-slide="2"></div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+    <div class="container">
+        <h2 class="section-title">Neden Quiz360?</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <div class="feature-icon">
+                        <i class="fa-solid fa-layer-group"></i>
+                    </div>
+                    <h3 class="feature-title">Farklı Kategoriler</h3>
+                    <p class="feature-text">Teknoloji'den tarihe, bilimden sanata kadar geniş yelpazede quizler.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <div class="feature-icon">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+                    <h3 class="feature-title">Performans Takibi</h3>
+                    <p class="feature-text">Detaylı istatistiklerle gelişimini analiz et ve kendini geliştir.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <div class="feature-icon">
+                        <i class="fa-solid fa-ranking-star"></i>
+                    </div>
+                    <h3 class="feature-title">Sıralamalar</h3>
+                    <p class="feature-text">Liderlik tablosunda yerini al ve diğer kullanıcılarla yarış!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Categories Section -->
+<section class="categories-section">
+    <div class="container">
+        <h2 class="section-title">Kategoriler</h2>
+        <div class="d-flex flex-wrap justify-content-center">
+            @foreach (var category in ViewBag.Categories)
+            {
+                <a asp-controller="Quiz" asp-action="List" asp-route-id="@category.Id" asp-route-category="@category.Name"
+                    asp-route-search="" class="category-badge px-4 py-2"
+                    style="background: @GetRandomCategoryColor(); color: white; text-decoration: none;">
+                    @category.Name
+                </a>
+
+            }
+        </div>
+    </div>
+</section>
+
+
+<!-- Latest Quizzes Section -->
+@if (ViewBag.LatestQuizzes != null)
+{
+    <section class="quizzes-section">
+        <div class="container">
+            <h2 class="section-title">🆕 Son Eklenen Quizler</h2>
+            <div class="row g-4">
+                @foreach (var quiz in ViewBag.LatestQuizzes)
+                {
+                    <div class="col-md-4">
+                        <div class="card quiz-card">
+                            <div class="card-body">
+                                <h3 class="card-title">@quiz.Title</h3>
+                                <p class="card-text">@quiz.Description</p>
+                                <p class="quiz-category">
+                                    <i class="fas fa-bookmark"></i> @quiz.CategoryName
+                                </p>
+                                <a asp-controller="Quiz" asp-action="StartIntro" asp-route-id="@quiz.Id"
+                                    class="btn btn-quiz align-self-start">
+                                    Başla <i class="fas fa-play"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+}
+
+@section Scripts {
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script>
+        // Hero Slider Functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const slides = document.querySelectorAll('.slide');
+            const dots = document.querySelectorAll('.slider-dot');
+            let currentSlide = 0;
+
+            function showSlide(index) {
+                slides.forEach(slide => slide.classList.remove('active'));
+                dots.forEach(dot => dot.classList.remove('active'));
+
+                slides[index].classList.add('active');
+                dots[index].classList.add('active');
+                currentSlide = index;
+            }
+
+            // Auto slide change
+            setInterval(() => {
+                let nextSlide = (currentSlide + 1) % slides.length;
+                showSlide(nextSlide);
+            }, 5000);
+
+            // Dot navigation
+            dots.forEach(dot => {
+                dot.addEventListener('click', function () {
+                    showSlide(parseInt(this.dataset.slide));
+                });
+            });
+
+            // Scroll animations
+            const featureBoxes = document.querySelectorAll('.feature-box');
+            const quizCards = document.querySelectorAll('.quiz-card');
+            const statCards = document.querySelectorAll('.stat-card');
+
+            function animateOnScroll() {
+                featureBoxes.forEach((box, index) => {
+                    const boxPosition = box.getBoundingClientRect().top;
+                    const screenPosition = window.innerHeight / 1.3;
+
+                    if (boxPosition < screenPosition) {
+                        setTimeout(() => {
+                            box.style.opacity = '1';
+                            box.style.transform = 'translateY(0)';
+                        }, index * 200);
+                    }
+                });
+
+                quizCards.forEach((card, index) => {
+                    const cardPosition = card.getBoundingClientRect().top;
+                    const screenPosition = window.innerHeight / 1.3;
+
+                    if (cardPosition < screenPosition) {
+                        setTimeout(() => {
+                            card.style.opacity = '1';
+                            card.style.transform = 'translateY(0)';
+                        }, index * 150);
+                    }
+                });
+
+                statCards.forEach((card, index) => {
+                    const cardPosition = card.getBoundingClientRect().top;
+                    const screenPosition = window.innerHeight / 1.3;
+
+                    if (cardPosition < screenPosition) {
+                        setTimeout(() => {
+                            card.style.opacity = '1';
+                            card.style.transform = 'translateY(0)';
+                        }, index * 100);
+                    }
+                });
+            }
+
+            // Initial check
+            animateOnScroll();
+
+            // Add scroll event
+            window.addEventListener('scroll', animateOnScroll);
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            function animateCountUp(element, target) {
+                let count = 0;
+                let increment = target / 100; // animasyonun adım sayısı
+                let intervalTime = 15; // ms cinsinden animasyon hızı
+                let interval = setInterval(() => {
+                    count += increment;
+                    if (count >= target) {
+                        element.textContent = target;
+                        clearInterval(interval);
+                    } else {
+                        element.textContent = Math.floor(count);
+                    }
+                }, intervalTime);
+            }
+
+            // Tüm sayıları seç
+            const counters = document.querySelectorAll('.stat-number');
+
+            counters.forEach(counter => {
+                // Sayı değerini al (stringden int'e)
+                const target = parseInt(counter.textContent, 10);
+
+                // İlk olarak sayıyı 0 yap
+                counter.textContent = '0';
+
+                // Animasyonu başlat
+                animateCountUp(counter, target);
+            });
+        });
+    </script>
+}
+
+@functions {
+    private string GetRandomCategoryColor()
+    {
+        var colors = new List<string> {
+"#3a86ff", "#8338ec", "#ff006e", "#fb5607", "#ffbe0b",
+"#3a0ca3", "#4361ee", "#4cc9f0", "#f72585", "#7209b7"
+};
+        return colors[new Random().Next(colors.Count)];
+    }
+}

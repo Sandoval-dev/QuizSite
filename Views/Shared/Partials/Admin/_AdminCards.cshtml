@@ -1,0 +1,489 @@
+@using QuizSite.Models
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --charcoal: #264653;
+        --persian-green: #2a9d8f;
+        --saffron: #e9c46a;
+        --sandy-brown: #f4a261;
+        --burnt-sienna: #e76f51;
+        --light-gray: #f8f9fa;
+        --medium-gray: #e9ecef;
+        --dark-gray: #495057;
+        --text-color: #212529;
+        --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        --transition: all 0.25s ease;
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--light-gray);
+        color: var(--text-color);
+        line-height: 1.6;
+    }
+
+    .container {
+        max-width: 1200px;
+        padding: 2rem 1rem;
+    }
+
+    h2 {
+        font-weight: 600;
+        color: var(--charcoal);
+        margin-bottom: 2rem;
+        position: relative;
+        padding-bottom: 0.5rem;
+    }
+
+    h2::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 50px;
+        height: 3px;
+        background-color: var(--persian-green);
+    }
+
+    /* Kartlar */
+    .card {
+        border: none;
+        border-radius: 8px;
+        box-shadow: var(--card-shadow);
+        margin-bottom: 2rem;
+        background: white;
+        transition: var(--transition);
+        overflow: hidden;
+    }
+
+    .card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+        font-weight: 500;
+        font-size: 1rem;
+        color: white;
+        background-color: var(--charcoal);
+        padding: 0.75rem 1.5rem;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    /* Özet Kartlar */
+    .summary-card {
+        background: white;
+        border-left: 4px solid;
+        border-radius: 6px;
+        padding: 1.25rem;
+        box-shadow: var(--card-shadow);
+        transition: var(--transition);
+        height: 100%;
+    }
+
+    .summary-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .summary-card.primary {
+        border-left-color: var(--charcoal);
+    }
+
+    .summary-card.success {
+        border-left-color: var(--persian-green);
+    }
+
+    .summary-card.warning {
+        border-left-color: var(--saffron);
+    }
+
+    .summary-card.danger {
+        border-left-color: var(--burnt-sienna);
+    }
+
+    .summary-card h6 {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        font-size: 0.85rem;
+        color: var(--dark-gray);
+    }
+
+    .summary-card h3 {
+        font-weight: 600;
+        font-size: 1.75rem;
+        margin: 0;
+        color: var(--charcoal);
+    }
+
+    .summary-card i {
+        font-size: 1.5rem;
+        color: var(--dark-gray);
+        opacity: 0.7;
+        margin-top: 0.5rem;
+    }
+
+    /* Tablo stili */
+    .table-responsive {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+    }
+
+    thead tr {
+        color: black;
+        font-weight: bolder;
+    }
+
+    thead th {
+        padding: 0.75rem 1.25rem;
+        font-weight: 500;
+        font-size: 0.85rem;
+        text-align: left;
+    }
+
+    tbody tr {
+        border-bottom: 1px solid var(--medium-gray);
+        transition: var(--transition);
+    }
+
+    tbody tr:hover {
+        background-color: rgba(0, 0, 0, 0.02);
+    }
+
+    tbody td {
+        padding: 0.75rem 1.25rem;
+        font-size: 0.9rem;
+    }
+
+    tbody td:first-child {
+        font-weight: 500;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        border-radius: 4px;
+    }
+
+    .badge-primary {
+        background-color: rgba(38, 70, 83, 0.1);
+        color: var(--charcoal);
+    }
+
+    .badge-success {
+        background-color: rgba(42, 157, 143, 0.1);
+        color: var(--persian-green);
+    }
+
+    /* Grafik konteyner */
+    .chart-container {
+        position: relative;
+        height: 250px;
+    }
+
+    /* Animasyonlar */
+    @@keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-fade-in {
+        animation: fadeIn 0.4s ease forwards;
+    }
+
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .summary-card h3 {
+            font-size: 1.5rem;
+        }
+        
+        thead,
+        tbody,
+        tr,
+        th,
+        td {
+            display: block;
+        }
+
+        thead tr {
+            display: none;
+        }
+
+        tbody tr {
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        tbody td {
+            padding-left: 50%;
+            position: relative;
+            text-align: right;
+            border-bottom: none;
+        }
+
+        tbody td::before {
+            content: attr(data-label);
+            position: absolute;
+            left: 1rem;
+            top: 0.75rem;
+            font-weight: 500;
+            text-transform: capitalize;
+            color: var(--charcoal);
+        }
+    }
+</style>
+
+<div class="container py-4">
+    <h2 class="animate-fade-in">Admin Dashboard</h2>
+
+    <!-- Özet Kartlar -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3 animate-fade-in delay-1">
+            <div class="summary-card primary">
+                <h6>Toplam Quiz</h6>
+                <h3>@ViewBag.QuizCount</h3>
+                <i class="fas fa-clipboard-list"></i>
+            </div>
+        </div>
+        <div class="col-md-3 animate-fade-in delay-1">
+            <div class="summary-card success">
+                <h6>Toplam Soru</h6>
+                <h3>@ViewBag.QuestionCount</h3>
+                <i class="fas fa-question-circle"></i>
+            </div>
+        </div>
+        <div class="col-md-3 animate-fade-in delay-2">
+            <div class="summary-card warning">
+                <h6>Kullanıcı Sayısı</h6>
+                <h3>@ViewBag.UserCount</h3>
+                <i class="fas fa-users"></i>
+            </div>
+        </div>
+        <div class="col-md-3 animate-fade-in delay-2">
+            <div class="summary-card danger">
+                <h6>Toplam Çözüm</h6>
+                <h3>@ViewBag.ResultCount</h3>
+                <i class="fas fa-check-double"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grafik -->
+    <div class="card mb-4 animate-fade-in delay-1">
+        <div class="card-header">
+            <i class="fas fa-chart-bar mr-2"></i>Çözüm Dağılımı
+        </div>
+        <div class="card-body">
+            <div class="chart-container">
+                <canvas id="quizChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- En Çok Çözülen Quizler ve En Son Eklenen Quizler -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-6 animate-fade-in delay-2">
+            <div class="card h-100">
+                <div class="card-header">
+                    <i class="fas fa-fire mr-2"></i>   En Çok Çözülenler
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Başlık</th>
+                                    <th>Kategori</th>
+                                    <th>Çözülme</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    var topQuizzes = ViewBag.TopQuizzes as List<QuizSummaryViewModel>;
+                                }
+                                @if (topQuizzes != null && topQuizzes.Count > 0)
+                                {
+                                    foreach (var quiz in topQuizzes)
+                                    {
+                                        <tr>
+                                            <td data-label="Başlık">@quiz.Title</td>
+                                            <td data-label="Kategori">@quiz.CategoryName</td>
+                                            <td data-label="Çözülme"><span class="badge badge-primary">@quiz.SolveCount</span></td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="3" class="text-center py-3">Kayıt bulunamadı.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 animate-fade-in delay-3">
+            <div class="card h-100">
+                <div class="card-header">
+                    <i class="fas fa-plus-circle mr-2"></i>   Son Eklenenler
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Başlık</th>
+                                    <th>Kategori</th>
+                                    <th>Durum</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    var recentQuizzes = ViewBag.RecentQuizzes as List<QuizSummaryViewModel>;
+                                }
+                                @if (recentQuizzes != null && recentQuizzes.Count > 0)
+                                {
+                                    foreach (var quiz in recentQuizzes)
+                                    {
+                                        <tr>
+                                            <td data-label="Başlık">@quiz.Title</td>
+                                            <td data-label="Kategori">@quiz.CategoryName</td>
+                                            <td data-label="Durum"><span class="badge badge-success">Yeni</span></td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="3" class="text-center py-3">Kayıt bulunamadı.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Son Kullanıcılar -->
+    <div class="card animate-fade-in delay-3">
+        <div class="card-header">
+            <i class="fas fa-user-clock mr-2"></i>   Son Kaydolanlar
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Kullanıcı</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            var latestUsers = ViewBag.latestUsers as List<UserViewModel>;
+                        }
+                        @if (latestUsers != null && latestUsers.Count > 0)
+                        {
+                            foreach (var user in latestUsers)
+                            {
+                                <tr>
+                                    <td data-label="Kullanıcı">@user.UserName.ToLowerInvariant()</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="3" class="text-center py-3">Kayıt bulunamadı.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const chartLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.ChartLabels ?? new List<string>()));
+        const chartData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.ChartData ?? new List<int>()));
+        
+        const ctx = document.getElementById('quizChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: chartLabels,
+                datasets: [{
+                    label: 'Çözüm Sayısı',
+                    data: chartData,
+                    backgroundColor: '#2a9d8f',
+                    borderColor: '#264653',
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#264653',
+                        titleFont: { size: 12 },
+                        bodyFont: { size: 12 },
+                        padding: 10,
+                        cornerRadius: 4,
+                        displayColors: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                animation: {
+                    duration: 1000,
+                    easing: 'easeOutQuart'
+                }
+            }
+        });
+    });
+</script>

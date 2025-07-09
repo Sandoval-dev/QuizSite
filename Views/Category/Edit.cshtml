@@ -1,0 +1,209 @@
+@model CategoryEditModel
+@{
+    ViewData["Title"] = "Kategori Güncelle";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    :root {
+        --charcoal: #264653;
+        --persian-green: #2a9d8f;
+        --saffron: #e9c46a;
+        --sandy-brown: #f4a261;
+        --burnt-sienna: #e76f51;
+        --light-gray: #f8f9fa;
+        --medium-gray: #e9ecef;
+        --dark-gray: #495057;
+        --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        --transition: all 0.3s ease;
+    }
+
+    body {
+        background-color: #f5f7fa;
+    }
+
+    .edit-container {
+        max-width: 700px;
+        margin: 2rem auto;
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    .edit-card {
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: var(--card-shadow);
+        transition: var(--transition);
+    }
+
+    .edit-card:hover {
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, var(--persian-green), var(--charcoal));
+        color: white;
+        padding: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .card-title {
+        font-weight: 600;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .card-title i {
+        font-size: 1.5rem;
+    }
+
+    .btn-back {
+        background-color: white;
+        color: var(--charcoal);
+        border: none;
+        border-radius: 6px;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+    .btn-back:hover {
+        background-color: var(--charcoal);
+        color: white;
+        transform: translateX(-3px);
+    }
+
+    .card-body {
+        padding: 2rem;
+        background-color: white;
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: var(--charcoal);
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-control {
+        border-radius: 8px;
+        border: 1px solid var(--medium-gray);
+        padding: 0.75rem 1rem;
+        transition: var(--transition);
+    }
+
+    .form-control:focus {
+        border-color: var(--persian-green);
+        box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.2);
+    }
+
+    .btn-save {
+        background-color: var(--persian-green);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-save:hover {
+        background-color: var(--charcoal);
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba(42, 157, 143, 0.3);
+    }
+
+    .text-danger {
+        color: var(--burnt-sienna);
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
+    }
+
+    /* Animations */
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .edit-container {
+            padding: 0 1rem;
+        }
+        
+        .card-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+    }
+</style>
+
+<div class="edit-container">
+    <div class="edit-card">
+        <div class="card-header">
+            <h2 class="card-title">
+                <i class="fas fa-edit"></i> Kategori Güncelle
+            </h2>
+            <a asp-action="Index" class="btn btn-back">
+                <i class="fas fa-arrow-left"></i> Kategorilere Dön
+            </a>
+        </div>
+
+        <div class="card-body">
+            <form method="post">
+                <input type="hidden" name="Id" value="@Model.Id" />
+
+                <div class="mb-4">
+                    <label asp-for="Name" class="form-label">
+                        <i class="fas fa-tag"></i> Kategori Adı
+                    </label>
+                    <input asp-for="Name" class="form-control" placeholder="Kategori adını girin" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="text-end mt-4">
+                    <button type="submit" class="btn btn-save">
+                        <i class="fas fa-save"></i> Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script>
+        // Form alanına odaklanıldığında animasyon
+        document.getElementById('Name').addEventListener('focus', function() {
+            this.parentElement.style.transform = 'translateX(5px)';
+        });
+        document.getElementById('Name').addEventListener('blur', function() {
+            this.parentElement.style.transform = 'translateX(0)';
+        });
+    </script>
+}

@@ -1,0 +1,276 @@
+@model QuizEditModel
+@{
+    ViewData["Title"] = "Quiz Düzenle";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    :root {
+        --charcoal: #264653;
+        --persian-green: #2a9d8f;
+        --saffron: #e9c46a;
+        --sandy-brown: #f4a261;
+        --burnt-sienna: #e76f51;
+        --light-gray: #f8f9fa;
+        --medium-gray: #e9ecef;
+        --dark-gray: #495057;
+        --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+    }
+
+    .edit-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: var(--card-shadow);
+    }
+
+    .page-title {
+        color: var(--charcoal);
+        font-weight: 600;
+        margin-bottom: 2rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid var(--medium-gray);
+        position: relative;
+    }
+
+    .page-title::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 60px;
+        height: 3px;
+        background-color: var(--persian-green);
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: var(--charcoal);
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control, .form-select {
+        border-radius: 6px;
+        border: 1px solid var(--medium-gray);
+        padding: 0.5rem 1rem;
+        transition: var(--transition);
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--persian-green);
+        box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.2);
+    }
+
+    .form-text {
+        font-size: 0.85rem;
+        color: var(--dark-gray);
+        margin-top: 0.25rem;
+    }
+
+    .btn-primary {
+        background-color: var(--persian-green);
+        border: none;
+        padding: 0.5rem 1.5rem;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: var(--transition);
+    }
+
+    .btn-primary:hover {
+        background-color: var(--charcoal);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-secondary {
+        background-color: var(--medium-gray);
+        border: none;
+        padding: 0.5rem 1.5rem;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: var(--transition);
+    }
+
+    .btn-secondary:hover {
+        background-color: var(--dark-gray);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .question-select-container {
+        position: relative;
+    }
+
+    .question-select {
+        height: 300px;
+        border-radius: 6px;
+    }
+
+    .question-select option {
+        padding: 0.5rem 1rem;
+        border-bottom: 1px solid var(--light-gray);
+        transition: var(--transition);
+    }
+
+    .question-select option:hover {
+        background-color: var(--light-gray);
+    }
+
+    .question-select option:checked {
+        background-color: var(--persian-green);
+        color: white;
+    }
+
+    .text-danger {
+        color: var(--burnt-sienna);
+        font-size: 0.85rem;
+    }
+
+    /* Animations */
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade {
+        animation: fadeIn 0.4s ease forwards;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .edit-container {
+            padding: 1.5rem;
+        }
+        
+        .btn-group {
+            width: 100%;
+        }
+        
+        .btn {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+    }
+</style>
+
+<div class="edit-container animate-fade">
+    <h2 class="page-title">
+        <i class="fas fa-edit me-2"></i>Quiz Düzenle
+    </h2>
+
+    <form asp-action="Edit" method="post">
+        <input type="hidden" asp-for="Id" />
+
+        <div class="mb-4">
+            <label asp-for="Title" class="form-label">
+                <i class="fas fa-heading me-2"></i>Başlık
+            </label>
+            <input asp-for="Title" class="form-control" placeholder="Quiz başlığını girin" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+
+        <div class="mb-4">
+            <label asp-for="Description" class="form-label">
+                <i class="fas fa-align-left me-2"></i>Açıklama
+            </label>
+            <textarea asp-for="Description" class="form-control" rows="4" placeholder="Quiz açıklamasını girin"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <label asp-for="CategoryId" class="form-label">
+                    <i class="fas fa-tag me-2"></i>Kategori
+                </label>
+                <select asp-for="CategoryId" asp-items="Model.Categories" class="form-select" id="categorySelect">
+                    <option value="">Kategori seçin</option>
+                </select>
+                <span asp-validation-for="CategoryId" class="text-danger"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="DurationInMinutes" class="form-label">
+                    <i class="fas fa-clock me-2"></i>Süre (Dakika)
+                </label>
+                <input asp-for="DurationInMinutes" class="form-control" type="number" min="1" max="180" placeholder="Quiz süresini girin" />
+                <span asp-validation-for="DurationInMinutes" class="text-danger small"></span>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label">
+                <i class="fas fa-question-circle me-2"></i>Sorular
+            </label>
+            <div class="question-select-container">
+                <select asp-for="SelectedQuestionIds" class="form-select question-select" multiple size="10" id="questionSelect">
+                    @foreach (var q in Model.AllQuestions)
+                    {
+                        <option value="@q.Value" selected="@(Model.SelectedQuestionIds.Contains(int.Parse(q.Value)))">
+                            @q.Text
+                        </option>
+                    }
+                </select>
+                <div class="form-text">
+                    <i class="fas fa-info-circle me-2"></i>Ctrl/Cmd tuşu ile çoklu seçim yapabilirsiniz.
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between mt-5">
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="fas fa-times me-2"></i>İptal
+            </a>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save me-2"></i>Kaydet
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Kategori değiştiğinde soruları yükle
+            $('#categorySelect').change(function () {
+                const categoryId = $(this).val();
+                showLoading();
+
+                $.get('/Quiz/GetQuestionsByCategory', { categoryId }, function (data) {
+                    const $questionSelect = $('#questionSelect');
+                    $questionSelect.empty();
+
+                    if (data.length === 0) {
+                        $questionSelect.append('<option disabled>Bu kategoride soru bulunamadı</option>');
+                    } else {
+                        data.forEach(q => {
+                            $questionSelect.append(`<option value="${q.id}">${q.text}</option>`);
+                        });
+                    }
+                    hideLoading();
+                }).fail(function() {
+                    hideLoading();
+                    alert('Soru yüklenirken bir hata oluştu');
+                });
+            });
+
+            function showLoading() {
+                $('#questionSelect').html('<option disabled>Yükleniyor...</option>');
+            }
+
+            function hideLoading() {
+                // Yükleme tamamlandı
+            }
+        });
+    </script>
+}

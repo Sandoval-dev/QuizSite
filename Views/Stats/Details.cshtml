@@ -1,0 +1,371 @@
+@using QuizSite.Data;
+@model List<UserQuizResult>
+@{
+    ViewData["Title"] = "Quiz Detayları";
+    Layout = "~/Views/Shared/_SiteLayout.cshtml";
+}
+
+<style>
+    :root {
+        --primary-color: #4361ee;
+        --secondary-color: #3f37c9;
+        --success-color: #28a745;
+        --danger-color: #dc3545;
+        --info-color: #6c757d;
+        /* Boş sorular için yeni renk */
+        --light-color: #f8f9fa;
+        --dark-color: #343a40;
+        --text-color: #212529;
+        --border-color: #dee2e6;
+        --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+    }
+
+    .quiz-history-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background: white;
+        border-radius: 12px;
+        box-shadow: var(--card-shadow);
+    }
+
+    .quiz-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .quiz-title {
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin: 0;
+    }
+
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        background-color: var(--primary-color);
+        color: white;
+        border-radius: 6px;
+        text-decoration: none;
+        transition: var(--transition);
+    }
+
+    .back-btn:hover {
+        background-color: var(--secondary-color);
+        transform: translateX(-3px);
+        color: white;
+    }
+
+    .back-btn i {
+        margin-right: 0.5rem;
+    }
+
+    .no-history {
+        text-align: center;
+        padding: 2rem;
+        color: var(--info-color);
+        font-size: 1.1rem;
+    }
+
+    .history-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin-bottom: 2rem;
+    }
+
+    .history-table thead {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+    }
+
+    .history-table th {
+        padding: 1rem;
+        text-align: left;
+        font-weight: 500;
+    }
+
+    .history-table tbody tr {
+        transition: var(--transition);
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .history-table tbody tr:last-child {
+        border-bottom: none;
+    }
+
+    .history-table tbody tr:hover {
+        background-color: rgba(0, 0, 0, 0.02);
+    }
+
+    .history-table td {
+        padding: 1rem;
+        position: relative;
+    }
+
+    .history-table .correct {
+        color: var(--success-color);
+        font-weight: 600;
+    }
+
+    .history-table .wrong {
+        color: var(--danger-color);
+        font-weight: 600;
+    }
+
+    .history-table .blank {
+        color: var(--info-color);
+        font-weight: 500;
+    }
+
+    .history-table .attempt-number {
+        font-weight: 500;
+        color: var(--dark-color);
+    }
+
+    /* Progress bar for correct answers */
+    .progress-container {
+        width: 100%;
+        height: 6px;
+        background-color: #e9ecef;
+        border-radius: 3px;
+        margin-top: 0.5rem;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, var(--success-color), #5cb85c);
+        border-radius: 3px;
+        transition: width 0.6s ease;
+    }
+
+    /* Result summary styles */
+    .result-summary {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    /* Chart container */
+    .chart-container {
+        margin-top: 2rem;
+        padding: 1rem;
+        background: white;
+        border-radius: 8px;
+        box-shadow: var(--card-shadow);
+    }
+
+    /* Animations */
+    @@keyframes
+    fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade {
+        animation: fadeIn 0.4s ease forwards;
+    }
+
+    .delay-1 {
+        animation-delay: 0.1s;
+    }
+
+    .delay-2 {
+        animation-delay: 0.2s;
+    }
+
+    /* Responsive */
+    @@media
+    (max-width: 768px) {
+        .quiz-history-container {
+            padding: 1rem;
+            margin: 1rem;
+        }
+
+        .quiz-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .history-table {
+            display: block;
+            overflow-x: auto;
+        }
+
+        .result-summary {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+
+    @@media
+    (max-width: 480px) {
+
+        .history-table th,
+        .history-table td {
+            padding: 0.75rem 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .quiz-title {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+
+<div class="quiz-history-container animate-fade">
+    <div class="quiz-header">
+        <h1 class="quiz-title">@ViewBag.QuizTitle - Çözüm Geçmişiniz</h1>
+        <a href="@Url.Action("Index", "Stats")" class="back-btn animate-fade delay-1">
+            <i class="fas fa-arrow-left"></i> Geri Dön
+        </a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="no-history animate-fade delay-1">
+            <i class="far fa-folder-open fa-3x mb-3"></i>
+            <p>Bu quiz için çözüm geçmişiniz bulunmamaktadır.</p>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive animate-fade delay-1">
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Deneme</th>
+                        <th>Sonuç</th>
+                        <th>Tarih</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+                        var result = Model[i];
+                        var totalQuestions = result.CorrectCount + result.WrongCount + result.BlankCount;
+                        var percentage = totalQuestions > 0 ? (result.CorrectCount * 100) / totalQuestions : 0;
+
+                        <tr>
+                            <td class="attempt-number">#@(i + 1)</td>
+                            <td>
+                                <div>
+                                    <span class="correct">@result.CorrectCount Doğru</span> /
+                                    <span class="wrong">@result.WrongCount Yanlış</span> /
+                                    <span class="blank">@result.BlankCount Boş</span>
+                                </div>
+                                <div class="progress-container">
+                                    <div class="progress-bar" style="width: @percentage%"></div>
+                                </div>
+                            </td>
+                            <td>@result.TakenAt.ToLocalTime().ToString("g")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="chart-container animate-fade delay-2">
+            <canvas id="performanceChart" height="150"></canvas>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const quizResults = @Html.Raw(Json.Serialize(Model));
+
+            if (quizResults.length > 0) {
+                const ctx = document.getElementById('performanceChart').getContext('2d');
+                const labels = quizResults.map((_, index) => `Deneme ${index + 1}`);
+                const correctData = quizResults.map(r => r.correctCount);
+                const wrongData = quizResults.map(r => r.wrongCount);
+                const blankData = quizResults.map(r => r.blankCount);
+                console.log(blankData); // Hepsi 0 mı, undefined mı?
+
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Doğru Cevaplar',
+                                data: correctData,
+                                borderColor: '#28a745',
+                                backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                                borderWidth: 2,
+                                tension: 0.3,
+                                fill: true
+                            },
+                            {
+                                label: 'Yanlış Cevaplar',
+                                data: wrongData,
+                                borderColor: '#dc3545',
+                                backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                                borderWidth: 2,
+                                tension: 0.3,
+                                fill: true
+                            },
+                            {
+                                label: 'Boş Cevaplar',
+                                data: blankData,
+                                borderColor: '#6c757d',
+                                backgroundColor: 'rgba(108, 117, 125, 0.1)',
+                                borderWidth: 2,
+                                tension: 0.3,
+                                fill: true
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Performans Gelişiminiz',
+                                font: {
+                                    size: 16
+                                }
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Soru Sayısı'
+                                }
+                            }
+                        },
+                        animation: {
+                            duration: 1000
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+}

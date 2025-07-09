@@ -1,0 +1,215 @@
+@using QuizSite.Data
+@model Category
+
+@{
+    ViewData["Title"] = "Kategori Sil";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    :root {
+        --charcoal: #264653;
+        --persian-green: #2a9d8f;
+        --saffron: #e9c46a;
+        --sandy-brown: #f4a261;
+        --burnt-sienna: #e76f51;
+        --light-gray: #f8f9fa;
+        --medium-gray: #e9ecef;
+        --dark-gray: #495057;
+        --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        --transition: all 0.3s ease;
+    }
+
+    body {
+        background-color: #f5f7fa;
+    }
+
+    .delete-container {
+        max-width: 700px;
+        margin: 3rem auto;
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    .delete-card {
+        background-color: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: var(--card-shadow);
+        transition: var(--transition);
+    }
+
+    .delete-card:hover {
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .delete-header {
+        background: linear-gradient(135deg, var(--burnt-sienna), #d85d44);
+        color: white;
+        padding: 1.5rem 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .delete-header i {
+        font-size: 1.5rem;
+    }
+
+    .delete-header h2 {
+        font-weight: 600;
+        margin: 0;
+        font-size: 1.5rem;
+    }
+
+    .delete-body {
+        padding: 2.5rem;
+        text-align: center;
+    }
+
+    .warning-message {
+        font-size: 1.1rem;
+        color: var(--charcoal);
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+    }
+
+    .category-name {
+        font-weight: 700;
+        color: var(--burnt-sienna);
+    }
+
+    .danger-alert {
+        background-color: rgba(231, 111, 81, 0.1);
+        border-left: 4px solid var(--burnt-sienna);
+        padding: 1rem;
+        border-radius: 6px;
+        margin: 2rem 0;
+        text-align: left;
+    }
+
+    .danger-alert i {
+        color: var(--burnt-sienna);
+        margin-right: 0.5rem;
+    }
+
+    .btn-group {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .btn-delete {
+        background-color: var(--burnt-sienna);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-delete:hover {
+        background-color: #d85d44;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(231, 111, 81, 0.3);
+    }
+
+    .btn-cancel {
+        background-color: var(--charcoal);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+    .btn-cancel:hover {
+        background-color: #1e3640;
+        transform: translateX(-3px);
+        color: white;
+    }
+
+    /* Animations */
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+
+    .pulse-on-hover:hover {
+        animation: pulse 1.5s infinite;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .delete-container {
+            padding: 0 1rem;
+        }
+        
+        .delete-body {
+            padding: 1.5rem;
+        }
+        
+        .btn-group {
+            flex-direction: column;
+        }
+        
+        .btn-delete, .btn-cancel {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
+<div class="delete-container">
+    <div class="delete-card">
+        <div class="delete-header">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h2>Kategori Silme Onayı</h2>
+        </div>
+
+        <div class="delete-body">
+            <p class="warning-message">
+                <span class="category-name">"@Model.Name"</span> kategorisini silmek üzeresiniz.
+            </p>
+
+            <div class="danger-alert">
+                <p><i class="fas fa-radiation"></i> <strong>Bu işlem geri alınamaz!</strong></p>
+                <p>Bu kategoriyle ilişkili tüm sorular kalıcı olarak silinecektir.</p>
+            </div>
+
+            <form asp-controller="Category" asp-action="DeleteConfirm" method="post">
+                <input type="hidden" name="Id" value="@Model.Id" />
+
+                <div class="btn-group">
+                    <a asp-controller="Category" asp-action="Index" class="btn btn-cancel">
+                        <i class="fas fa-times"></i> İptal
+                    </a>
+                    <button type="submit" class="btn btn-delete pulse-on-hover">
+                        <i class="fas fa-trash"></i> Sil
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

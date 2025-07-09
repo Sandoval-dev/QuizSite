@@ -1,0 +1,519 @@
+@model List<QuestionViewModel>
+
+@{
+    ViewData["Title"] = "Questions";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    var selectedCategory = ViewBag.SelectedCategory as string ?? "All";
+    var categories = ViewBag.Categories as SelectList ?? new SelectList(Enumerable.Empty<string>());
+}
+
+<style>
+    :root {
+        --charcoal: #264653;
+        --persian-green: #2a9d8f;
+        --saffron: #e9c46a;
+        --sandy-brown: #f4a261;
+        --burnt-sienna: #e76f51;
+        --light-gray: #f8f9fa;
+        --medium-gray: #e9ecef;
+        --dark-gray: #495057;
+        --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+    }
+
+    body {
+        background-color: var(--light-gray);
+    }
+
+    .container {
+        max-width: 1400px;
+        padding: 2rem 1rem;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--medium-gray);
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .page-title {
+        font-weight: 600;
+        color: var(--charcoal);
+        margin: 0;
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .page-title::after {
+        content: '';
+        position: absolute;
+        bottom: -12px;
+        left: 0;
+        width: 50px;
+        height: 3px;
+        background-color: var(--persian-green);
+    }
+
+    .page-title .badge {
+        background-color: var(--persian-green);
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .filter-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        align-items: center;
+    }
+
+    .search-input {
+        min-width: 220px;
+        border-radius: 6px;
+        border: 1px solid var(--medium-gray);
+        padding: 0.5rem 1rem;
+        transition: var(--transition);
+    }
+
+    .search-input:focus {
+        border-color: var(--persian-green);
+        box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.2);
+    }
+
+    .category-select {
+        min-width: 220px;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    .filter-btn {
+        background-color: var(--medium-gray);
+        border: none;
+        border-radius: 6px;
+        padding: 0.5rem 1rem;
+        transition: var(--transition);
+    }
+
+    .filter-btn:hover {
+        background-color: var(--persian-green);
+        color: white;
+    }
+
+    .create-btn {
+        background-color: var(--persian-green);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        padding: 0.5rem 1.25rem;
+        font-weight: 500;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .create-btn:hover {
+        background-color: var(--charcoal);
+        transform: translateY(-2px);
+        color: white;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .question-card {
+        background-color: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: var(--card-shadow);
+        transition: var(--transition);
+        height: 100%;
+        border: 1px solid var(--medium-gray);
+    }
+
+    .question-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        border-color: var(--persian-green);
+    }
+
+    .card-body {
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .card-category {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--sandy-brown);
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .card-question {
+        font-weight: 500;
+        color: var(--charcoal);
+        margin-bottom: 1rem;
+        flex-grow: 1;
+    }
+
+    .option-list {
+        margin-bottom: 1.5rem;
+    }
+
+    .option-item {
+        padding: 0.5rem;
+        border-radius: 4px;
+        margin-bottom: 0.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: var(--light-gray);
+    }
+
+    .option-item.correct {
+        background-color: rgba(42, 157, 143, 0.1);
+        border-left: 3px solid var(--persian-green);
+    }
+
+    .correct-badge {
+        background-color: var(--persian-green);
+        color: white;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.6rem;
+    }
+
+    .card-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: auto;
+    }
+
+    .action-btn {
+        padding: 0.4rem 0.8rem;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        transition: var(--transition);
+    }
+
+    .edit-btn {
+        background-color: rgba(233, 196, 106, 0.1);
+        color: var(--saffron);
+        border: 1px solid rgba(233, 196, 106, 0.3);
+    }
+
+    .edit-btn:hover {
+        background-color: var(--saffron);
+        color: white;
+    }
+
+    .delete-btn {
+        background-color: rgba(231, 111, 81, 0.1);
+        color: var(--burnt-sienna);
+        border: 1px solid rgba(231, 111, 81, 0.3);
+    }
+
+    .delete-btn:hover {
+        background-color: var(--burnt-sienna);
+        color: white;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: var(--card-shadow);
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        color: var(--medium-gray);
+        margin-bottom: 1rem;
+    }
+
+    .empty-state h4 {
+        color: var(--dark-gray);
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+        color: var(--dark-gray);
+        margin-bottom: 1.5rem;
+    }
+
+    .pagination-container {
+        margin-top: 3rem;
+    }
+
+    .page-item.active .page-link {
+        background-color: var(--persian-green);
+        border-color: var(--persian-green);
+    }
+
+    .page-link {
+        color: var(--charcoal);
+        border-radius: 6px !important;
+        margin: 0 0.25rem;
+        border: 1px solid var(--medium-gray);
+    }
+
+    .page-link:hover {
+        color: var(--persian-green);
+        background-color: var(--light-gray);
+    }
+
+    /* Modal styles */
+    .modal-header {
+        background-color: var(--burnt-sienna);
+        color: white;
+    }
+
+    .modal-footer .btn-secondary {
+        background-color: var(--charcoal);
+        border: none;
+    }
+
+    .modal-footer .btn-danger {
+        background-color: var(--burnt-sienna);
+        border: none;
+    }
+
+    /* Animations */
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade {
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .filter-container {
+            width: 100%;
+        }
+        
+        .search-input,
+        .category-select {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="container">
+    <div class="page-header animate-fade">
+        <h1 class="page-title">
+            <i class="fas fa-question-circle"></i> Soru Listesi
+            <span class="badge">@ViewBag.TotalQuestions</span>
+        </h1>
+        
+        <div class="d-flex flex-wrap gap-2 align-items-center">
+            <form method="get" class="filter-container">
+                <input type="text" 
+                       name="q" 
+                       class="form-control search-input" 
+                       value="@ViewData["q"]" 
+                       placeholder="Soru ara..." />
+                
+                <select name="category" class="form-select category-select" onchange="this.form.submit()">
+                    <option value="">Tüm Kategoriler</option>
+                    @if (ViewBag.Categories is List<SelectListItem> categoryList)
+                    {
+                        foreach (var item in categoryList)
+                        {
+                            <option value="@item.Value" selected="@(item.Value == (string)ViewBag.SelectedCategory)">
+                                @item.Text
+                            </option>
+                        }
+                    }
+                </select>
+                
+                <button type="submit" class="btn filter-btn">
+                    <i class="fas fa-filter"></i> Filtrele
+                </button>
+                
+                <a asp-action="Create" class="btn create-btn">
+                    <i class="fas fa-plus"></i> Yeni Soru
+                </a>
+            </form>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state animate-fade delay-1">
+            <i class="far fa-folder-open"></i>
+            <h4>Soru Bulunamadı</h4>
+            <p>Seçtiğiniz kriterlere uygun soru bulunamadı.</p>
+            <a asp-action="Create" class="btn create-btn">
+                <i class="fas fa-plus"></i> Yeni Soru Oluştur
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-5 g-4">
+            @foreach (var question in Model)
+            {
+                var modalId = $"deleteModal_{question.Id}";
+                
+                <div class="col animate-fade delay-1">
+                    <div class="question-card">
+                        <div class="card-body">
+                            <div class="card-category">
+                                <i class="fas fa-tag"></i> @question.CategoryName
+                            </div>
+                            
+                            <h5 class="card-question" title="@question.Text">
+                                @(question.Text.Length > 100 ? question.Text.Substring(0, 100) + "..." : question.Text)
+                            </h5>
+                            
+                            <div class="option-list">
+                                @for (int i = 0; i < question.Options.Count; i++)
+                                {
+                                    var option = question.Options[i];
+                                    bool isCorrect = (i == question.CorrectOptionIndex);
+                                    
+                                    <div class="option-item @(isCorrect ? "correct" : "")">
+                                        <span>@option.Text</span>
+                                        @if (isCorrect)
+                                        {
+                                            <span class="correct-badge">
+                                                <i class="fas fa-check"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                            
+                            <div class="card-actions">
+                                <a asp-action="Edit" style="text-decoration: none;" asp-route-id="@question.Id" class="action-btn edit-btn">
+                                    <i class="fas fa-edit"></i> Düzenle
+                                </a>
+                                
+                                <button class="action-btn delete-btn" data-bs-toggle="modal" data-bs-target="#@modalId">
+                                    <i class="fas fa-trash"></i> Sil
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div class="modal fade" id="@modalId" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">
+                                    <i class="fas fa-exclamation-triangle"></i> Silme Onayı
+                                </h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p><strong>Soru:</strong> @(question.Text.Length > 150 ? question.Text.Substring(0, 150) + "..." : question.Text)</p>
+                                <p class="text-danger">Bu soruyu kalıcı olarak silmek istediğinize emin misiniz?</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    <i class="fas fa-times"></i> Vazgeç
+                                </button>
+                                <form asp-action="Delete" asp-route-id="@question.Id" method="post">
+                                    <button type="submit" class="btn btn-danger">
+                                        <i class="fas fa-trash"></i> Sil
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+     
+        <div class="pagination-container animate-fade delay-2">
+            <nav aria-label="Sayfalama">
+                <ul class="pagination justify-content-center">
+                    @{
+                        int currentPage = ViewBag.CurrentPage ?? 1;
+                        int totalPages = ViewBag.TotalPages ?? 1;
+                        int startPage = currentPage - 2 > 0 ? currentPage - 2 : 1;
+                        int endPage = startPage + 4 <= totalPages ? startPage + 4 : totalPages;
+
+                        if (endPage - startPage < 4)
+                        {
+                            startPage = endPage - 4 > 0 ? endPage - 4 : 1;
+                        }
+
+                        string selectedCategoryForPaging = ViewBag.SelectedCategory ?? "";
+                        string searchQuery = ViewData["q"] as string ?? "";
+                    }
+
+                    <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                        <a class="page-link" 
+                           asp-action="Index" 
+                           asp-route-page="@(currentPage - 1)" 
+                           asp-route-category="@selectedCategoryForPaging" 
+                           asp-route-q="@searchQuery">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+
+                    @for (int i = startPage; i <= endPage; i++)
+                    {
+                        <li class="page-item @(i == currentPage ? "active" : "")">
+                            <a class="page-link" 
+                               asp-action="Index" 
+                               asp-route-page="@i" 
+                               asp-route-category="@selectedCategoryForPaging" 
+                               asp-route-q="@searchQuery">@i</a>
+                        </li>
+                    }
+
+                    <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                        <a class="page-link" 
+                           asp-action="Index" 
+                           asp-route-page="@(currentPage + 1)" 
+                           asp-route-category="@selectedCategoryForPaging" 
+                           asp-route-q="@searchQuery">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    }
+</div>

@@ -1,0 +1,144 @@
+@model QuizSite.Data.Quiz
+
+@{
+    ViewData["Title"] = "Delete Quiz";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    :root {
+        --charcoal: #264653;
+        --persian-green: #2a9d8f;
+        --saffron: #e9c46a;
+        --sandy-brown: #f4a261;
+        --burnt-sienna: #e76f51;
+    }
+
+    .delete-wrapper {
+        margin-top: 3rem;
+    }
+
+    .delete-card {
+        background-color: #fff;
+        border: none;
+        border-radius: 1.25rem;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .delete-header {
+        background-color: var(--burnt-sienna);
+        color: white;
+        padding: 1.5rem 2rem;
+        font-size: 1.5rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+    }
+
+    .delete-header i {
+        font-size: 1.4rem;
+        margin-right: 0.8rem;
+    }
+
+    .delete-body {
+        padding: 2rem 2.5rem;
+        text-align: center;
+    }
+
+    .delete-body p {
+        font-size: 1.15rem;
+        color: var(--charcoal);
+        font-weight: 500;
+        margin-bottom: 1rem;
+    }
+
+    .questions-list {
+        max-height: 200px;
+        overflow-y: auto;
+        margin-top: 1rem;
+        margin-bottom: 1.5rem;
+        text-align: left;
+        border: 1px solid #e0e0e0;
+        padding: 1rem;
+        border-radius: 8px;
+        background-color: #f8f9fa;
+    }
+
+    .questions-list li {
+        margin-bottom: 0.6rem;
+    }
+
+    .btn-delete {
+        background-color: var(--burnt-sienna);
+        color: white;
+        font-weight: 500;
+        padding: 0.6rem 2rem;
+        border-radius: 8px;
+    }
+
+    .btn-delete:hover {
+        background-color: #d85d44;
+        color: white;
+    }
+
+    .btn-cancel {
+        background-color: var(--charcoal);
+        color: white;
+        font-weight: 500;
+        padding: 0.6rem 2rem;
+        border-radius: 8px;
+    }
+
+    .btn-cancel:hover {
+        background-color: #1e3640;
+        color: white;
+    }
+</style>
+
+<div class="row justify-content-center delete-wrapper">
+    <div class="col-lg-8 col-md-10">
+        <div class="card delete-card">
+            <div class="delete-header">
+                <i class="fa-solid fa-trash-can"></i> Delete Quiz
+            </div>
+
+            <div class="delete-body">
+                <p>
+                    Are you absolutely sure you want to delete the quiz:
+                    <span class="fw-bold">"@Model.Title"</span>?
+                </p>
+
+                @if (Model.QuizQuestions != null && Model.QuizQuestions.Any())
+                {
+                    <p class="text-danger fw-semibold mt-3">
+                        ⚠️ This action will also permanently delete <strong><u>@Model.QuizQuestions.Count</u></strong> associated question(s)!
+                    </p>
+
+                    <ul class="questions-list">
+                        @foreach (var qq in Model.QuizQuestions)
+                        {
+                            <li>@qq.Question.Text</li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="text-warning">There are no questions associated with this quiz.</p>
+                }
+
+                <form asp-controller="Quiz" asp-action="DeleteConfirm" method="post" class="d-flex justify-content-center gap-4 mt-4">
+                    <input type="hidden" name="Id" value="@Model.Id" />
+
+                    <button type="submit" class="btn btn-delete">
+                        <i class="fa-solid fa-trash me-1"></i> Yes, Delete
+                    </button>
+                    <a asp-controller="Quiz" asp-action="Index" class="btn btn-cancel">
+                        <i class="fa-solid fa-xmark me-1"></i> Cancel
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

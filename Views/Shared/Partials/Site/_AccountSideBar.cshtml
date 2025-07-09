@@ -1,0 +1,138 @@
+<div class="sidebar-item @(ViewContext.RouteData.Values["action"]?.ToString() == "Settings" ? "active" : "")">
+    <a asp-controller="Account" asp-action="Settings" class="sidebar-link">
+        <div class="sidebar-icon">
+            <i class="fas fa-user"></i>
+        </div>
+        <span class="sidebar-text">Hesabım</span>
+        <div class="sidebar-arrow">
+            <i class="fas fa-chevron-right"></i>
+        </div>
+    </a>
+</div>
+
+<div class="sidebar-item @(ViewContext.RouteData.Values["action"]?.ToString() == "ChangePassword" ? "active" : "")">
+    <a asp-controller="Account" asp-action="ChangePassword" class="sidebar-link">
+        <div class="sidebar-icon">
+            <i class="fas fa-key"></i>
+        </div>
+        <span class="sidebar-text">Şifre Değiştir</span>
+        <div class="sidebar-arrow">
+            <i class="fas fa-chevron-right"></i>
+        </div>
+    </a>
+</div>
+
+<style>
+    .account-sidebar {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        transition: transform 0.3s ease;
+    }
+
+    .account-sidebar:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    .sidebar-item {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        transition: background-color 0.3s ease;
+    }
+
+    .sidebar-item:last-child {
+        border-bottom: none;
+    }
+
+    .sidebar-item:hover {
+        background-color: rgba(42, 157, 143, 0.05);
+    }
+
+    .sidebar-item.active {
+        background-color: rgba(42, 157, 143, 0.1);
+    }
+
+    .sidebar-link {
+        display: flex;
+        align-items: center;
+        padding: 1rem 1.5rem;
+        text-decoration: none;
+        color: var(--charcoal);
+        transition: all 0.3s ease;
+    }
+
+    .sidebar-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background-color: rgba(42, 157, 143, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .sidebar-item.active .sidebar-icon,
+    .sidebar-item:hover .sidebar-icon {
+        background-color: var(--persian-green);
+        color: white;
+    }
+
+    .sidebar-item .sidebar-icon i {
+        color: var(--persian-green);
+        transition: all 0.3s ease;
+    }
+
+    .sidebar-item.active .sidebar-icon i,
+    .sidebar-item:hover .sidebar-icon i {
+        color: white;
+    }
+
+    .sidebar-text {
+        flex-grow: 1;
+        font-weight: 500;
+        transition: transform 0.3s ease;
+    }
+
+    .sidebar-item:hover .sidebar-text {
+        transform: translateX(5px);
+    }
+
+    .sidebar-arrow {
+        color: rgba(0, 0, 0, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .sidebar-item:hover .sidebar-arrow {
+        color: var(--persian-green);
+        transform: translateX(3px);
+    }
+
+    /* Animation for sidebar items */
+    .sidebar-item {
+        opacity: 0;
+        transform: translateX(-10px);
+        animation: slideInRight 0.4s ease-out forwards;
+    }
+
+    .sidebar-item:nth-child(1) {
+        animation-delay: 0.1s;
+    }
+
+    .sidebar-item:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    @@keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+</style>

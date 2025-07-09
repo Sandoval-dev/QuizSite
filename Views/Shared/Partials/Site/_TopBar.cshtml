@@ -1,0 +1,80 @@
+@{
+    var name = User.Identity?.Name;
+    var displayName = !string.IsNullOrEmpty(name) && name.Contains("@")
+    ? name.Substring(0, name.IndexOf("@"))
+    : name;
+}
+
+
+<div class="container">
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a class="navbar-brand me-3" asp-controller="Home" asp-action="Index">
+            🧠 <span class="quiz-logo">Quiz360</span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <!-- Sol taraf: Logo + Quizzes -->
+            <ul class="navbar-nav me-auto align-items-center">
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Quiz" asp-action="List">Quizler</a>
+                </li>
+                <li class="nav-item m-3">
+                    <a class="nav-link" asp-controller="Stats" asp-action="List">İstatistikler</a>
+                </li>
+            </ul>
+
+            <!-- Sağ taraf: Admin + Dropdown Menü -->
+            <ul class="navbar-nav ms-auto align-items-center">
+                @if (User.IsInRole("Admin"))
+                {
+                    <li class="nav-item me-2">
+                        <a class="nav-link text-warning fw-bold" asp-controller="Admin" asp-action="Index">
+                            <i class="fa-solid fa-user-shield me-1"></i> Admin
+                        </a>
+                    </li>
+                }
+                @if (User?.Identity?.IsAuthenticated == false)
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Account" asp-action="Login">
+                            <i class="fa-solid fa-right-to-bracket me-1"></i> Giriş Yap
+                        </a>
+                    </li>
+                }
+                else
+                {
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fa-solid fa-user-gear"></i><span style="margin: 5px;">@displayName</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" asp-controller="Stats" asp-action="Index">
+                                    <i class="fa-solid fa-chart-line me-2"></i>Kişisel İstatistikler
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" asp-controller="Account" asp-action="Settings">
+                                    <i class="fa-solid fa-sliders me-2"></i>Ayarlar
+                                </a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <a class="dropdown-item text-danger" asp-controller="Account" asp-action="Logout">
+                                    <i class="fa-solid fa-right-from-bracket me-2"></i>Çıkış Yap
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                }
+            </ul>
+
+        </div>
+    </nav>
+</div>

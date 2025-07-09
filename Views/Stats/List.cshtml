@@ -1,0 +1,210 @@
+@model List<QuizStatsListViewModel>
+
+@{
+    ViewData["Title"] = "Quiz Listesi";
+    Layout = "~/Views/Shared/_SiteLayout.cshtml";
+}
+
+<style>
+    :root {
+        --primary-color: #4361ee;
+        --secondary-color: #3f37c9;
+        --success-color: #4cc9f0;
+        --dark-color: #212529;
+        --light-color: #f8f9fa;
+        --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    .quiz-list-container {
+        padding: 2rem 0;
+    }
+
+    .page-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: var(--dark-color);
+        margin-bottom: 2rem;
+        position: relative;
+        display: inline-block;
+    }
+
+    .page-title:after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 60px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+        border-radius: 2px;
+    }
+
+    .quiz-card {
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: var(--card-shadow);
+        transition: var(--transition);
+        background: white;
+        height: 100%;
+        transform: translateY(0);
+    }
+
+    .quiz-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+    }
+
+    .quiz-card .card-body {
+        padding: 1.75rem;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .quiz-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--dark-color);
+        margin-bottom: 1rem;
+        line-height: 1.4;
+    }
+
+    .quiz-meta {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .quiz-meta i {
+        margin-right: 8px;
+        color: var(--primary-color);
+    }
+
+    .stats-btn {
+        margin-top: auto;
+        align-self: flex-start;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border: none;
+        border-radius: 6px;
+        padding: 0.6rem 1.25rem;
+        font-weight: 500;
+        color: white;
+        display: inline-flex;
+        align-items: center;
+        transition: var(--transition);
+    }
+
+    .stats-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+        color: white;
+    }
+
+    .stats-btn i {
+        margin-right: 8px;
+    }
+
+    /* Animations */
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-card {
+        animation: fadeInUp 0.6s ease forwards;
+        opacity: 0;
+    }
+
+    /* Delay animations for each card */
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+    .delay-4 { animation-delay: 0.4s; }
+    .delay-5 { animation-delay: 0.5s; }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .quiz-list-container {
+            padding: 1.5rem 0;
+        }
+        
+        .page-title {
+            font-size: 1.8rem;
+        }
+        
+        .quiz-card .card-body {
+            padding: 1.5rem;
+        }
+    }
+</style>
+
+<div class="quiz-list-container">
+    <div class="container">
+        <h1 class="page-title animate-card">📊 Quiz İstatistikleri</h1>
+        
+        @if (!Model.Any())
+        {
+            <div class="alert alert-info animate-card delay-1">
+                <i class="fas fa-info-circle me-2"></i> Henüz istatistik görüntüleyebileceğiniz bir quiz bulunmamaktadır.
+            </div>
+        }
+        else
+        {
+            <div class="row g-4">
+                @for (int i = 0; i < Model.Count; i++)
+                {
+                    var quiz = Model[i];
+                    var animationDelay = $"delay-{(i % 5) + 1}";
+                    
+                    <div class="col-md-6 col-lg-4">
+                        <div class="quiz-card animate-card @animationDelay">
+                            <div class="card-body">
+                                <h3 class="quiz-title">@quiz.QuizTitle</h3>
+                                
+                                <div class="quiz-meta">
+                                    <i class="fas fa-users"></i>
+                                    <span>@quiz.SolverCount kişi çözdü</span>
+                                </div>
+                                
+                                <a style="text-decoration: none;" href="@Url.Action("ListDetail", "Stats", new { id = quiz.QuizId })" 
+                                   class="stats-btn">
+                                    <i class="fas fa-chart-line"></i> Detayları Gör
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Add hover effects dynamically
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.quiz-card');
+            
+            cards.forEach(card => {
+                // Add hover class on mouseenter
+                card.addEventListener('mouseenter', function() {
+                    this.classList.add('hover');
+                });
+                
+                // Remove hover class on mouseleave
+                card.addEventListener('mouseleave', function() {
+                    this.classList.remove('hover');
+                });
+            });
+        });
+    </script>
+}

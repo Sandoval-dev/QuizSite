@@ -1,0 +1,696 @@
+@model List<QuizViewModel>
+
+@{
+    ViewData["Title"] = "Tüm Quizler";
+    Layout = "~/Views/Shared/_SiteLayout.cshtml";
+    var selectedCategory = ViewBag.SelectedCategory as string ?? "";
+    var searchText = ViewBag.SearchText as string ?? "";
+    var categories = ViewBag.Categories as List<string> ?? new();
+    var solvedQuizzes = ViewBag.SolvedQuizzes as List<int> ?? new();
+    var lastTakenDict = ViewBag.LastTakenDict as Dictionary<int, DateTime> ?? new Dictionary<int, DateTime>();
+    var nowUtc = DateTime.UtcNow;
+    const int waitSeconds = 180; // 3 dakika
+    
+}
+
+<style>
+    /* Modern Color Scheme */
+    :root {
+        --primary-dark: #1a2a3a;
+        --primary-light: #2d3e50;
+        --accent-teal: #00c9b7;
+        --accent-orange: #ff7b54;
+        --accent-yellow: #ffd166;
+        --text-light: #f8f9fa;
+        --text-dark: #212529;
+    }
+
+    /* Main Container */
+    .quiz-container {
+        padding: 3rem 0;
+        background-color: #f8fafc;
+        min-height: calc(100vh - 120px);
+    }
+
+    /* Page Title */
+    .page-title {
+        font-weight: 700;
+        color: var(--primary-dark);
+        margin-bottom: 2.5rem;
+        position: relative;
+        padding-bottom: 1rem;
+        font-size: 2.2rem;
+    }
+
+    .page-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 80px;
+        height: 5px;
+        background: linear-gradient(90deg, var(--accent-teal), var(--accent-orange));
+        border-radius: 3px;
+        animation: titleUnderline 1.5s ease-in-out infinite alternate;
+    }
+
+    /* Filter Section */
+    .filter-section {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        margin-bottom: 3rem;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        transition: all 0.4s ease;
+    }
+
+    .filter-section:hover {
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        transform: translateY(-3px);
+    }
+
+    .filter-title {
+        color: var(--primary-dark);
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .filter-title i {
+        color: var(--accent-teal);
+    }
+
+    /* Form Elements */
+    .form-select,
+    .form-control {
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 0.75rem 1.25rem;
+        transition: all 0.3s ease;
+        box-shadow: none;
+    }
+
+    .form-select:focus,
+    .form-control:focus {
+        border-color: var(--accent-teal);
+        box-shadow: 0 0 0 0.25rem rgba(0, 201, 183, 0.25);
+    }
+
+    /* Quiz Cards */
+    .quiz-card {
+        border: none;
+        border-radius: 16px;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        height: 100%;
+        overflow: hidden;
+        position: relative;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .quiz-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(90deg, var(--accent-teal), var(--accent-orange));
+    }
+
+    .quiz-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-body {
+        padding: 1.75rem;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .card-title {
+        font-weight: 700;
+        color: var(--primary-dark);
+        margin-bottom: 1rem;
+        font-size: 1.3rem;
+        transition: color 0.3s ease;
+    }
+
+    .quiz-card:hover .card-title {
+        color: var(--accent-teal);
+    }
+
+    .card-text {
+        color: #6c757d;
+        margin-bottom: 1.5rem;
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+
+    /* Category Badge */
+    .badge-category {
+        background: linear-gradient(135deg, var(--accent-teal), #00a896);
+        color: white;
+        font-weight: 600;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        display: inline-block;
+        margin-bottom: 1.25rem;
+        align-self: flex-start;
+        box-shadow: 0 4px 10px rgba(0, 201, 183, 0.2);
+    }
+
+    /* Quiz Meta */
+    .quiz-meta {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        margin-bottom: 1.75rem;
+        flex-wrap: wrap;
+    }
+
+    .quiz-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+
+    .quiz-meta-item i {
+        color: var(--accent-teal);
+        font-size: 1rem;
+    }
+
+    /* Status Badge */
+    .quiz-status {
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .status-solved {
+        background-color: rgba(0, 201, 183, 0.1);
+        color: var(--accent-teal);
+    }
+
+    .status-unsolved {
+        background-color: rgba(255, 123, 84, 0.1);
+        color: var(--accent-orange);
+    }
+
+    /* Start Button */
+    .btn-start {
+        background: linear-gradient(135deg, var(--accent-orange), #ff6347);
+        color: white;
+        font-weight: 600;
+        border: none;
+        border-radius: 10px;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(255, 123, 84, 0.2);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-left: auto;
+    }
+
+    .btn-start:hover {
+        background: linear-gradient(135deg, #ff6347, var(--accent-orange));
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(255, 123, 84, 0.3);
+    }
+
+    .btn-start:active {
+        transform: translateY(1px);
+    }
+
+    /* No Results */
+    .no-results {
+        padding: 4rem 2rem;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        margin-top: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .no-results i {
+        font-size: 3.5rem;
+        color: var(--accent-orange);
+        margin-bottom: 1.5rem;
+        animation: bounce 2s infinite ease-in-out;
+    }
+
+    .no-results h5 {
+        color: var(--primary-dark);
+        font-weight: 600;
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+    }
+
+    .no-results p {
+        color: #6c757d;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    /* Animations */
+    @@keyframes titleUnderline {
+        0% {
+            transform: scaleX(0.8);
+            opacity: 0.7;
+        }
+
+        100% {
+            transform: scaleX(1.1);
+            opacity: 1;
+        }
+    }
+
+    @@keyframes bounce {
+
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-15px);
+        }
+    }
+
+    .quiz-card {
+        animation: fadeInUp 0.6s ease forwards;
+        opacity: 0;
+    }
+
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Staggered animations for cards */
+    .quiz-card:nth-child(1) {
+        animation-delay: 0.1s;
+    }
+
+    .quiz-card:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .quiz-card:nth-child(3) {
+        animation-delay: 0.3s;
+    }
+
+    .quiz-card:nth-child(4) {
+        animation-delay: 0.4s;
+    }
+
+    .quiz-card:nth-child(5) {
+        animation-delay: 0.5s;
+    }
+
+    .quiz-card:nth-child(6) {
+        animation-delay: 0.6s;
+    }
+
+    .quiz-card:nth-child(7) {
+        animation-delay: 0.7s;
+    }
+
+    .quiz-card:nth-child(8) {
+        animation-delay: 0.8s;
+    }
+
+    /* Responsive Adjustments */
+    @@media (max-width: 992px) {
+        .page-title {
+            font-size: 1.8rem;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .quiz-card {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .filter-section {
+            padding: 1.5rem;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .page-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .quiz-meta {
+            gap: 0.75rem;
+        }
+
+        .no-results {
+            padding: 2rem 1rem;
+        }
+
+        .no-results i {
+            font-size: 2.5rem;
+        }
+    }
+
+    /* Status Badge - Waiting */
+.status-waiting {
+    background-color: rgba(255, 209, 102, 0.15);
+    color: var(--accent-yellow);
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    animation: pulseWarning 2s infinite;
+}
+
+.countdown-digits {
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    min-width: 30px;
+    display: inline-block;
+    text-align: center;
+}
+
+@@keyframes pulseWarning {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 209, 102, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 8px rgba(255, 209, 102, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 209, 102, 0);
+    }
+}
+
+.status-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-right: 5px;
+}
+
+.countdown-label {
+    margin-right: 5px;
+    font-size: 0.8rem;
+}
+
+.countdown-unit {
+    margin-left: 3px;
+    font-size: 0.8rem;
+}
+
+.progress {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    transition: width 1s linear;
+}
+
+/* Responsive adjustments */
+@@media (max-width: 576px) {
+    .countdown-label {
+        display: none;
+    }
+    
+    .countdown-unit {
+        display: none;
+    }
+    
+    .status-waiting {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+}
+</style>
+
+<section class="quiz-container">
+    <div class="container">
+        <h1 class="page-title animate__animated animate__fadeIn">Tüm Quizler</h1>
+
+        @await Html.PartialAsync("Partials/Site/_Message")
+
+        <!-- Filter Section -->
+        <div class="filter-section animate__animated animate__fadeIn">
+            <h4 class="filter-title"><i class="fas fa-sliders-h"></i> Filtreleme Seçenekleri</h4>
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-5">
+                    <label class="form-label">Kategori Seçin</label>
+                    <select name="category" class="form-select">
+                        <option value="">Tüm Kategoriler</option>
+                        @foreach (var category in categories)
+                        {
+                            <option value="@category" selected="@(category == selectedCategory)">
+                                @category
+                            </option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label">Quiz Arama</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white"><i class="fas fa-search text-muted"></i></span>
+                        <input type="text" name="search" class="form-control"
+                            placeholder="Quiz adı veya anahtar kelime girin..." value="@searchText" />
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-start w-100">
+                        <i class="fas fa-filter"></i> Uygula
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Quiz List -->
+        @if (Model.Any())
+        {
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                @foreach (var quiz in Model)
+                {
+                    var isSolved = solvedQuizzes.Contains(quiz.Id);
+                    var canRetry = true;
+                    var secondsLeft = 0;
+                    if (isSolved && lastTakenDict.TryGetValue(quiz.Id, out var lastTaken))
+                    {
+                        var diff = (nowUtc - lastTaken).TotalSeconds;
+                        if (diff < waitSeconds)
+                        {
+                            canRetry = false;
+                            secondsLeft = waitSeconds - (int)diff;
+                        }
+                    }
+                    <div class="col">
+                        <div class="card quiz-card h-100">
+                            <div class="card-body d-flex flex-column">
+                                <span class="badge-category">@quiz.CategoryName</span>
+                                <h5 class="card-title">@quiz.Title</h5>
+                                <p class="card-text">@(quiz.Description.Length > 100 ? quiz.Description.Substring(0, 100) +
+                                                                "..." : quiz.Description)</p>
+
+                                <div class="quiz-meta">
+                                    <div class="quiz-meta-item">
+                                        <i class="fas fa-clock"></i>
+                                        <span>@quiz.DurationInMinutes dakika</span>
+                                    </div>
+                                    <div class="quiz-meta-item">
+                                        <i class="fas fa-question-circle"></i>
+                                        <span>@quiz.QuestionCount soru</span>
+                                    </div>
+                                </div>
+
+                                <div class="mt-auto d-flex justify-content-between align-items-center">
+                                    @if (isSolved)
+{
+    if (!canRetry)
+    {
+        <div class="status-container">
+            <span class="quiz-status status-waiting" data-quizid="@quiz.Id" data-seconds="@secondsLeft">
+                <i class="fas fa-hourglass-half"></i>
+                <span>Tekrar çözülebilir:</span>
+                <span class="countdown-digits">@secondsLeft</span>
+                <span class="countdown-unit">saniye</span>
+            </span>
+            <div class="progress mt-2" style="height: 4px;">
+                <div class="progress-bar bg-warning progress-bar-striped progress-bar-animated" 
+                     role="progressbar" 
+                     style="width: @((secondsLeft * 100) / waitSeconds)%"
+                     aria-valuenow="@secondsLeft" 
+                     aria-valuemin="0" 
+                     aria-valuemax="@waitSeconds">
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <span class="quiz-status status-solved">
+            <i class="fas fa-check-circle"></i> Tekrar Çözülebilir
+        </span>
+    }
+}
+                                    else
+                                    {
+                                        <span class="quiz-status status-unsolved">
+                                            <i class="fas fa-times-circle"></i> Hiç Çözülmedi
+                                        </span>
+                                    }
+@{
+    var buttonClass = canRetry ? "btn btn-start" : "btn btn-start disabled";
+    var onclickAttr = canRetry ? "" : "onclick=\"alert('3 dakika dolmadan tekrar çözüme başlayamazsınız!'); return false;\"";
+}
+@if (canRetry)
+{
+    <a href="@Url.Action("StartIntro", "Quiz", new { id = quiz.Id })"
+       class="btn btn-start">
+        <i class="fas fa-play"></i> Başla
+    </a>
+}
+else
+{
+    <a href="#"
+       class="btn btn-start disabled"
+       onclick="alert('3 dakika dolmadan tekrar çözüme başlayamazsınız!'); return false;">
+        <i class="fas fa-play"></i> Başla
+    </a>
+}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="no-results animate__animated animate__fadeIn">
+                <i class="fas fa-search"></i>
+                <h5>Aramanıza uygun quiz bulunamadı</h5>
+                <p>Farklı filtreler deneyerek tekrar arama yapabilirsiniz</p>
+            </div>
+        }
+    </div>
+</section>
+
+<!-- Script for animations -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Add intersection observer for cards
+        const cards = document.querySelectorAll('.quiz-card');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationPlayState = 'running';
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        cards.forEach(card => {
+            card.style.animationPlayState = 'paused';
+            observer.observe(card);
+        });
+    });
+</script>
+<script>
+   document.addEventListener('DOMContentLoaded', function () {
+    // Countdown functionality
+    const countdownElements = document.querySelectorAll('.status-waiting[data-seconds]');
+    
+    countdownElements.forEach(el => {
+        let seconds = parseInt(el.getAttribute('data-seconds'));
+        const quizId = el.getAttribute('data-quizid');
+        const countdownDigits = el.querySelector('.countdown-digits');
+        const progressBar = el.closest('.status-container')?.querySelector('.progress-bar');
+        
+        const updateCountdown = () => {
+            if (seconds > 0) {
+                seconds--;
+                countdownDigits.textContent = seconds;
+                
+                // Progress bar güncelleme
+                if (progressBar) {
+                    const percent = (seconds * 100) / @waitSeconds;
+                    progressBar.style.width = `${percent}%`;
+                    progressBar.setAttribute('aria-valuenow', seconds);
+                }
+                
+                // Son 10 saniyede renk değişimi
+                if (seconds <= 10) {
+                    el.style.backgroundColor = 'rgba(255, 123, 84, 0.15)';
+                    el.style.color = 'var(--accent-orange)';
+                    el.querySelector('i').className = 'fas fa-hourglass-end';
+                }
+            } else {
+                clearInterval(interval);
+                
+                // Durum güncellemesi
+                el.innerHTML = `
+    <i class="fas fa-check-circle"></i>
+    <span>Tekrar Çözülebilir</span>
+`;
+el.className = 'quiz-status status-solved';
+
+                
+                // Butonu aktif hale getirme
+                const startBtn = el.closest('.card-body').querySelector('.btn-start');
+                if (startBtn) {
+                    startBtn.classList.remove('disabled');
+                    startBtn.onclick = null;
+                    startBtn.href = '@Url.Action("StartIntro", "Quiz")' + '?id=' + quizId;
+                }
+                
+                // Progress bar'ı kaldırma
+                if (progressBar) {
+                    progressBar.parentElement.remove();
+                }
+            }
+        };
+        
+        // Hemen güncelle
+        updateCountdown();
+        
+        // Interval başlat
+        const interval = setInterval(updateCountdown, 1000);
+    });
+});
+</script>

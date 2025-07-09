@@ -1,0 +1,76 @@
+<style>
+    .custom-navbar {
+        background-color: #264653;
+    }
+
+    .custom-navbar .navbar-brand,
+    .custom-navbar .nav-link,
+    .custom-navbar .dropdown-toggle {
+        color: #e9c46a !important;
+        font-weight: 500;
+    }
+
+    .custom-navbar .nav-link:hover,
+    .custom-navbar .dropdown-item:hover {
+        background-color: #2a9d8f;
+        color: #ffffff !important;
+        border-radius: 5px;
+    }
+
+    .custom-navbar .dropdown-menu {
+        background-color: #264653;
+        border: none;
+    }
+
+    .custom-navbar .dropdown-item {
+        color: #f4a261;
+    }
+
+    .custom-navbar .dropdown-item:active {
+        background-color: #e76f51;
+        color: #fff;
+    }
+
+    .navbar-toggler {
+        border-color: #e9c46a;
+    }
+
+    .navbar-toggler-icon {
+        background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3e%3cpath stroke='rgba(233, 196, 106, 1)' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+    }
+</style>
+
+<nav class="navbar custom-navbar navbar-expand-lg">
+    <div class="container">
+        <a asp-controller="Admin" asp-action="Index" class="navbar-brand">Admin</a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a asp-controller="Quiz" asp-action="Index" class="nav-link">Quizzes</a>
+                </li>
+                <li class="nav-item">
+                    <a asp-controller="Question" asp-action="Index" class="nav-link">Questions</a>
+                </li>
+                <li class="nav-item">
+                    <a asp-controller="Category" asp-action="Index" class="nav-link">Categories</a>
+                </li>
+                <li class="nav-item">
+                    <a asp-controller="User" asp-action="Index" class="nav-link">Users</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav mb-2 mb-lg-0">
+                <li class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">@User.Identity?.Name</a>
+                    <ul class="dropdown-menu">
+                        <li><a asp-controller="Account" asp-action="Logout" class="dropdown-item">Çıkış</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - My Quiz App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    
+
+    <style>
+        :root {
+            --charcoal: #264653;
+            --persian-green: #2a9d8f;
+            --saffron: #e9c46a;
+            --sandy-brown: #f4a261;
+            --burnt-sienna: #e76f51;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        header {
+            background-color: var(--charcoal);
+            color: white;
+            padding: 1rem 0;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--saffron);
+        }
+
+        .nav-link {
+            color: white;
+            font-weight: 500;
+            border:2px solid  var(--saffron);
+            border-radius: 5px;
+        }
+
+        .nav-link:hover {
+            color: var(--sandy-brown);
+            border:2px solid var(--sandy-brown);
+        }
+
+        footer {
+            background-color: var(--charcoal);
+            color: white;
+            padding: 1rem 0;
+            margin-top: 3rem;
+        }
+
+        .btn-primary {
+            background-color: var(--persian-green);
+            border-color: var(--persian-green);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--sandy-brown);
+            border-color: var(--sandy-brown);
+        }
+
+        .content-wrapper {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+
+        .quiz-logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(to right, var(--persian-green), var(--saffron), var(--burnt-sienna));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+            letter-spacing: 1px;
+        }
+
+        .dropdown-menu {
+            background-color: var(--charcoal);
+            border: 1px solid var(--persian-green);
+            border-radius: 10px;
+            padding: 0.5rem;
+        }
+
+        /* Menüdeki linkler */
+        .dropdown-menu .dropdown-item {
+            color: #fff;
+            transition: background-color 0.2s ease;
+            border-radius: 6px;
+        }
+
+        /* Hover durumunda arka plan ve yazı rengi */
+        .dropdown-menu .dropdown-item:hover {
+            background-color: var(--sandy-brown);
+            color: #fff;
+        }
+
+        /* Ayırıcı çizgi */
+        .dropdown-divider {
+            border-top: 1px solid var(--saffron);
+        }
+
+        /* Çıkış Yap özel rengi */
+        .dropdown-item.text-danger {
+            color: var(--burnt-sienna) !important;
+        }
+
+        .dropdown-item.text-danger:hover {
+            background-color: var(--burnt-sienna);
+            color: #fff !important;
+        }
+
+        
+    </style>
+
+    @RenderSection("Styles", required: false)
+</head>
+
+<body>
+    <!-- Header / Navbar -->
+    <header>
+        @await Html.PartialAsync("Partials/Site/_TopBar")
+    </header>
+
+    <!-- Main Content -->
+    <main class="container content-wrapper">
+        @RenderBody()
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-4" style="background-color: var(--charcoal); color: #fff;">
+        <p class="mb-0">© 2025 Quiz360 • Tüm Hakları Saklıdır.</p> <a href="https://github.com/sandoval-dev" target="_blank" style="color: var(--saffron);">Osman Erdem Kılıç</a>
+    </footer>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+
+</html>

@@ -1,0 +1,343 @@
+@model QuizResultViewModel
+@{
+    ViewData["Title"] = "Sonuçlar";
+    Layout = "~/Views/Shared/_SiteLayout.cshtml";
+}
+
+<style>
+    :root {
+        --charcoal: #264653;
+        --persian-green: #2a9d8f;
+        --saffron: #e9c46a;
+        --sandy-brown: #f4a261;
+        --burnt-sienna: #e76f51;
+        --white: #fff;
+        --gray-light: #f8f9fa;
+        --gray-medium: #6c757d;
+        --dark-blue: #1a3a5f;
+    }
+
+    body {
+        background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+        font-family: 'Poppins', sans-serif;
+        min-height: 100vh;
+    }
+
+    .result-container {
+        max-width: 700px;
+        margin: 40px auto;
+        padding: 0 15px;
+        animation: fadeIn 0.8s ease-out;
+    }
+
+    @@keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-card {
+        background: var(--white);
+        border-radius: 16px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: none;
+        position: relative;
+    }
+
+    .result-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .result-header {
+        background: linear-gradient(135deg, var(--persian-green), var(--dark-blue));
+        color: var(--white);
+        padding: 25px 30px;
+        text-align: center;
+        position: relative;
+    }
+
+    .result-header h3 {
+        font-weight: 700;
+        font-size: 2rem;
+        margin: 0;
+        position: relative;
+        z-index: 2;
+    }
+
+    .result-header::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--saffron), var(--burnt-sienna));
+    }
+
+    .confetti {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        background-color: var(--saffron);
+        opacity: 0;
+        top: 0;
+        left: 50%;
+        animation: confetti 3s ease-in-out infinite;
+    }
+
+    @@keyframes confetti {
+        0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+        100% { transform: translateY(500px) rotate(360deg); opacity: 0; }
+    }
+
+    .result-body {
+        padding: 30px;
+    }
+
+    .result-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        animation: slideIn 0.5s ease-out forwards;
+        opacity: 0;
+    }
+
+    @@keyframes slideIn {
+        from { transform: translateX(-20px); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+
+    .result-item:last-child {
+        border-bottom: none;
+    }
+
+    .result-label {
+        font-weight: 600;
+        color: var(--charcoal);
+        font-size: 1.1rem;
+    }
+
+    .result-value {
+        font-weight: 700;
+        color: var(--dark-blue);
+        font-size: 1.1rem;
+    }
+
+    .correct-answers {
+        color: var(--persian-green);
+    }
+
+    .percentage {
+        font-size: 1.3rem;
+        position: relative;
+        display: inline-block;
+    }
+
+    .percentage::after {
+        content: '';
+        position: absolute;
+        bottom: -5px;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(90deg, var(--saffron), var(--persian-green));
+        transform: scaleX(0);
+        transform-origin: left;
+        animation: percentageGrow 1.5s ease-out forwards;
+    }
+
+    @@keyframes percentageGrow {
+        from { transform: scaleX(0); }
+        to { transform: scaleX(1); }
+    }
+
+    .progress-container {
+        width: 100%;
+        height: 12px;
+        background-color: #e0e0e0;
+        border-radius: 6px;
+        margin: 20px 0 30px;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, var(--saffron), var(--persian-green));
+        border-radius: 6px;
+        width: 0;
+        animation: progressFill 1.5s ease-out forwards;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .progress-bar::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(90deg, 
+            rgba(255,255,255,0.1) 0%, 
+            rgba(255,255,255,0.3) 50%, 
+            rgba(255,255,255,0.1) 100%);
+        animation: progressShine 2s infinite;
+    }
+
+    @@keyframes progressFill {
+        from { width: 0; }
+        to { width: @Model.Percentage%; }
+    }
+
+    @@keyframes progressShine {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+
+    .btn-return {
+        background: linear-gradient(135deg, var(--saffron), var(--sandy-brown));
+        color: var(--charcoal);
+        border: none;
+        padding: 12px 30px;
+        font-weight: 600;
+        border-radius: 8px;
+        margin-top: 20px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(244, 162, 97, 0.3);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-return:hover {
+        background: linear-gradient(135deg, var(--sandy-brown), var(--burnt-sienna));
+        color: var(--white);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(231, 111, 81, 0.4);
+    }
+
+    .btn-return i {
+        margin-right: 8px;
+    }
+
+    .celebration-icon {
+        font-size: 3rem;
+        margin-bottom: 20px;
+        display: inline-block;
+        animation: bounce 1s infinite alternate;
+    }
+
+    @@keyframes bounce {
+        from { transform: translateY(0); }
+        to { transform: translateY(-15px); }
+    }
+
+    /* Generate confetti elements */
+    .confetti-container {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: 1;
+    }
+</style>
+
+<div class="result-container">
+    <div class="result-card">
+        <div class="confetti-container">
+            @for (int i = 0; i < 20; i++)
+            {
+                <div class="confetti" style="left: @(new Random().Next(0, 100))%; 
+                    animation-delay: @(new Random().Next(0, 3000))ms;
+                    background-color: @(i % 3 == 0 ? "var(--saffron)" : i % 3 == 1 ? "var(--burnt-sienna)" : "var(--persian-green)");
+                    width: @(new Random().Next(6, 12))px;
+                    height: @(new Random().Next(6, 12))px;"></div>
+            }
+        </div>
+
+        <div class="result-header">
+            <div class="celebration-icon">
+                @if (Model.Percentage >= 80)
+                {
+                    <text>🏆</text>
+                }
+                else if (Model.Percentage >= 50)
+                {
+                    <text>🎯</text>
+                }
+                else
+                {
+                    <text>📊</text>
+                }
+            </div>
+            <h3>Quiz Sonuçları</h3>
+        </div>
+
+        <div class="result-body">
+            <div class="result-item" style="animation-delay: 0.2s">
+                <span class="result-label">Quiz Adı:</span>
+                <span class="result-value">@Model.QuizTitle</span>
+            </div>
+
+            <div class="result-item" style="animation-delay: 0.4s">
+                <span class="result-label">Doğru Cevaplar:</span>
+                <span class="result-value correct-answers">@Model.CorrectAnswers / @Model.TotalQuestions</span>
+            </div>
+
+            <div class="result-item" style="animation-delay: 0.6s">
+                <span class="result-label">Başarı Oranı:</span>
+                <span class="result-value percentage">% @Model.Percentage</span>
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-bar"></div>
+            </div>
+
+            <div class="result-item" style="animation-delay: 0.8s">
+                <span class="result-label">Tamamlanma Tarihi:</span>
+                <span class="result-value">@Model.TakenAt.ToString("f")</span>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <a style="text-decoration: none;" asp-action="List" class="btn-return">
+                    <i class="fas fa-arrow-left"></i> Quiz Listesine Dön
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script>
+        // Add celebration effect for high scores
+        document.addEventListener('DOMContentLoaded', function() {
+            const percentage = @Model.Percentage;
+            
+            if (percentage >= 80) {
+                // Add extra celebration for high scores
+                const celebration = document.createElement('div');
+                celebration.innerHTML = '🎉';
+                celebration.style.position = 'absolute';
+                celebration.style.fontSize = '2rem';
+                celebration.style.animation = 'bounce 0.8s infinite alternate';
+                
+                // Add multiple celebration elements
+                for (let i = 0; i < 5; i++) {
+                    const clone = celebration.cloneNode(true);
+                    clone.style.left = Math.random() * 80 + 10 + '%';
+                    clone.style.top = Math.random() * 50 + 20 + '%';
+                    clone.style.animationDelay = (i * 0.2) + 's';
+                    document.querySelector('.result-header').appendChild(clone);
+                }
+            }
+        });
+    </script>
+}

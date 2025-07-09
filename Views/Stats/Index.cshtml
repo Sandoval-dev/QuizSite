@@ -1,0 +1,359 @@
+@using System.Text.Json
+@model List<QuizStatsViewModel>
+@{
+    ViewData["Title"] = "İstatistikler";
+    Layout = "~/Views/Shared/_SiteLayout.cshtml";
+}
+
+<style>
+    :root {
+        --primary-color: #4361ee;
+        --secondary-color: #3f37c9;
+        --success-color: #28a745;
+        --danger-color: #dc3545;
+        --light-color: #f8f9fa;
+        --dark-color: #343a40;
+        --text-color: #212529;
+        --border-color: #dee2e6;
+        --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f5f7fa;
+        color: var(--text-color);
+    }
+
+    .container {
+        max-width: 1200px;
+        padding: 2rem 1rem;
+    }
+
+    h2 {
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 2rem;
+        position: relative;
+        padding-bottom: 0.75rem;
+    }
+
+    h2::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 60px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        border-radius: 2px;
+    }
+
+    /* Tablo Stilleri */
+    .stats-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: var(--card-shadow);
+        margin-bottom: 2.5rem;
+        transition: var(--transition);
+    }
+
+    .stats-table:hover {
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .stats-table thead tr {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+    }
+
+    .stats-table th {
+        padding: 1rem 1.25rem;
+        font-weight: 500;
+        text-align: left;
+    }
+
+    .stats-table tbody tr {
+        transition: var(--transition);
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .stats-table tbody tr:last-child {
+        border-bottom: none;
+    }
+
+    .stats-table tbody tr:hover {
+        background-color: rgba(0, 0, 0, 0.02);
+        transform: translateX(5px);
+    }
+
+    .stats-table td {
+        padding: 1rem 1.25rem;
+        font-size: 0.95rem;
+    }
+
+    .stats-table .text-success {
+        color: var(--success-color);
+        font-weight: 600;
+    }
+
+    .stats-table .text-danger {
+        color: var(--danger-color);
+        font-weight: 600;
+    }
+
+    /* Grafik Konteyner */
+    .chart-container {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: var(--card-shadow);
+        margin-bottom: 2rem;
+        transition: var(--transition);
+    }
+
+    .chart-container:hover {
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Animasyonlar */
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade {
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    .delay-1 {
+        animation-delay: 0.1s;
+    }
+
+    .delay-2 {
+        animation-delay: 0.2s;
+    }
+
+    .delay-3 {
+        animation-delay: 0.3s;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .stats-table {
+            display: block;
+            overflow-x: auto;
+        }
+
+        .stats-table th,
+        .stats-table td {
+            padding: 0.75rem;
+        }
+    }
+</style>
+
+<div class="container mt-4">
+    <h2 class="animate-fade">📊 Quiz İstatistikleri</h2>
+
+    <div class="animate-fade delay-1">
+        <table class="stats-table">
+            <thead>
+                <tr>
+
+                    <th>Quiz</th>
+                    <th>Toplam Soru</th>
+                    <th>Doğru</th>
+                    <th>Yanlış</th>
+                    <th>Boş</th>
+                    <th>Son Çözüm</th>
+                    <th>Detaylar</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var quiz in Model)
+                {
+                    <tr class="animate-fade delay-2">
+                        <td>@quiz.QuizTitle</td>
+                        <td style="font-weight: bold;">@quiz.TotalQuestions</td>
+                        <td class="text-success">@quiz.Correct</td>
+                        <td class="text-danger">@quiz.Wrong</td>
+                        <td class="text-muted">@quiz.Blank</td>
+                        <td>@(quiz.LastTakenAt?.ToLocalTime().ToString("g") ?? "Henüz çözülmedi")</td>
+                        <td>
+                            <a class="btn btn-primary btn-sm"
+                                href="@Url.Action("Details", "Stats", new { id = quiz.QuizId })">Detaylar</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="chart-container animate-fade delay-3">
+        <canvas id="quizChart" height="150"></canvas>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const ctx = document.getElementById('quizChart').getContext('2d');
+            const quizData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model));
+
+            const labels = quizData.map(q => q.QuizTitle);
+            const correct = quizData.map(q => q.Correct);
+            const wrong = quizData.map(q => q.Wrong);
+            const blank=quizData.map(q=>q.Blank)
+
+            // Gradient oluşturma
+            function createGradient(ctx, area, color1, color2) {
+                const gradient = ctx.createLinearGradient(0, area.bottom, 0, area.top);
+                gradient.addColorStop(0, color1);
+                gradient.addColorStop(1, color2);
+                return gradient;
+            }
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Doğru Cevaplar',
+                            data: correct,
+                            backgroundColor: function (context) {
+                                const chart = context.chart;
+                                const { ctx, chartArea } = chart;
+
+                                if (!chartArea) return '#28a745';
+                                return createGradient(ctx, chartArea, 'rgba(40, 167, 69, 0.8)', 'rgba(40, 167, 69, 0.5)');
+                            },
+                            borderColor: '#28a745',
+                            borderWidth: 1,
+                            borderRadius: 6,
+                            hoverBackgroundColor: '#218838'
+                        },
+                        {
+                            label: 'Yanlış Cevaplar',
+                            data: wrong,
+                            backgroundColor: function (context) {
+                                const chart = context.chart;
+                                const { ctx, chartArea } = chart;
+
+                                if (!chartArea) return '#dc3545';
+                                return createGradient(ctx, chartArea, 'rgba(220, 53, 69, 0.8)', 'rgba(220, 53, 69, 0.5)');
+                            },
+                            borderColor: '#dc3545',
+                            borderWidth: 1,
+                            borderRadius: 6,
+                            hoverBackgroundColor: '#c82333'
+                        },
+                        {
+                            label:'Boş Cevaplar',
+                            data:blank,
+                            backgroundColor: function (context) {
+                                const chart = context.chart;
+                                const { ctx, chartArea } = chart;
+
+                                if (!chartArea) return '#6c757d';
+                                return createGradient(ctx, chartArea, 'rgba(108, 117, 125, 0.8)', 'rgba(108, 117, 125, 0.5)');
+                            },
+                            borderColor: '#6c757d',
+                            borderWidth:1,
+                            borderRadius:6,
+                            hoverBackgroundColor: '#5a6268'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                font: {
+                                    size: 13,
+                                    family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+                                },
+                                padding: 20
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Quiz Performans Karşılaştırması',
+                            font: {
+                                size: 16,
+                                family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+                            },
+                            padding: {
+                                top: 10,
+                                bottom: 20
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleFont: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            bodyFont: {
+                                size: 13
+                            },
+                            padding: 12,
+                            cornerRadius: 6,
+                            displayColors: true
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            suggestedMax: Math.ceil(Math.max(...correct.concat(wrong)) / 5) * 5, // en büyük değeri 5'in katına yuvarla
+                            ticks: {
+                                stepSize: 5,
+                                callback: function (value) {
+                                    // sadece 5'in katı ise göster, değilse boş bırak (etiket gizleme)
+                                    return value % 5 === 0 ? value : '';
+                                },
+                                font: {
+                                    family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                stepSize: 5,
+                                font: {
+                                    family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+                                }
+                            }
+                        }
+                    },
+
+                    animation: {
+                        duration: 1200,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            });
+        });
+    </script>
+}

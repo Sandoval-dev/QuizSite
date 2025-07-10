@@ -1,5 +1,3 @@
-# Production ayar dosyası
-appsettings.Production.json
 
 # Kullanıcı ayarları
 *.user

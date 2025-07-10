@@ -242,3 +242,5 @@ C:\QuizSite\obj\Debug\net9.0\QuizSite.pdb
 C:\QuizSite\obj\Debug\net9.0\QuizSite.genruntimeconfig.cache
 C:\QuizSite\obj\Debug\net9.0\ref\QuizSite.dll
 C:\QuizSite\obj\Debug\net9.0\compressed\i1w55siqpt-dexd4x94v3.gz
+C:\QuizSite\bin\Debug\net9.0\appsettings.Production.json
+C:\QuizSite\obj\Debug\net9.0\QuizSite.sourcelink.json

@@ -26,7 +26,7 @@
         background-color: var(--sandy-brown);
         color: #fff;
         transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
     /* Table Styles */
@@ -42,7 +42,7 @@
     .table tbody tr:hover {
         background-color: #f8f9fa;
         transform: scale(1.01);
-        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
     }
 
     /* Page Title */
@@ -73,7 +73,7 @@
     .table-container {
         border-radius: 10px;
         overflow: hidden;
-        box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
     }
 
     .table th {
@@ -104,8 +104,15 @@
     }
 
     @@keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     .pulse {
@@ -113,9 +120,20 @@
     }
 
     @@keyframes pulse {
-        0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(42, 157, 143, 0.4); }
-        70% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(42, 157, 143, 0); }
-        100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(42, 157, 143, 0); }
+        0% {
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(42, 157, 143, 0.4);
+        }
+
+        70% {
+            transform: scale(1.02);
+            box-shadow: 0 0 0 10px rgba(42, 157, 143, 0);
+        }
+
+        100% {
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(42, 157, 143, 0);
+        }
     }
 
     .no-users {
@@ -127,9 +145,19 @@
     }
 
     @@keyframes bounceIn {
-        0% { transform: scale(0.9); opacity: 0; }
-        50% { transform: scale(1.05); opacity: 1; }
-        100% { transform: scale(1); }
+        0% {
+            transform: scale(0.9);
+            opacity: 0;
+        }
+
+        50% {
+            transform: scale(1.05);
+            opacity: 1;
+        }
+
+        100% {
+            transform: scale(1);
+        }
     }
 
     /* Avatar Styles */
@@ -161,7 +189,7 @@
     /* Modal Styles */
     .modal-content {
         border: none;
-        box-shadow: 0 12px 28px rgba(0,0,0,0.2);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
         border-radius: 10px;
         overflow: hidden;
     }
@@ -200,7 +228,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background-color: rgba(255,255,255,0.15);
+        background-color: rgba(255, 255, 255, 0.15);
         margin-right: 1rem;
         transition: transform 0.3s ease;
     }
@@ -211,7 +239,7 @@
 
     .modal-footer {
         padding: 1.25rem 1.75rem;
-        border-top: 1px solid rgba(0,0,0,0.05);
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
         background-color: #f8f9fa;
     }
 
@@ -253,12 +281,94 @@
 
     /* Responsive Adjustments */
     @@media (max-width: 768px) {
-        .table td, .table th {
+
+        .table td,
+        .table th {
             padding: 0.5rem;
         }
-        
-        .modal-body, .modal-footer {
+
+        .modal-body,
+        .modal-footer {
             padding: 1.25rem;
+        }
+    }
+
+    /* Pagination Styles */
+    .pagination-container {
+        margin-top: 2rem;
+        display: flex;
+        justify-content: center;
+    }
+
+    .pagination {
+        display: flex;
+        gap: 0.5rem;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .page-item {
+        border-radius: 8px;
+        overflow: hidden;
+        transition: var(--transition);
+    }
+
+    .page-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 40px;
+        height: 40px;
+        padding: 0 0.75rem;
+        border: 1px solid var(--medium-gray);
+        background-color: white;
+        color: var(--charcoal);
+        font-weight: 500;
+        transition: var(--transition);
+    }
+
+    .page-link:hover {
+        background-color: var(--light-gray);
+        border-color: var(--persian-green);
+        color: var(--persian-green);
+        transform: translateY(-2px);
+        box-shadow: 0 2px 8px rgba(42, 157, 143, 0.1);
+    }
+
+    .page-item.active .page-link {
+        background: linear-gradient(135deg, var(--persian-green), var(--charcoal));
+        color: white;
+        border-color: var(--persian-green);
+        box-shadow: 0 2px 8px rgba(42, 157, 143, 0.2);
+    }
+
+    .page-item.disabled .page-link {
+        background-color: var(--light-gray);
+        color: var(--medium-gray);
+        border-color: var(--medium-gray);
+        cursor: not-allowed;
+        opacity: 0.7;
+    }
+
+    .page-item.disabled .page-link:hover {
+        transform: none;
+        box-shadow: none;
+        background-color: var(--light-gray);
+        border-color: var(--medium-gray);
+    }
+
+    /* Responsive Pagination */
+    @@media (max-width: 576px) {
+        .pagination {
+            gap: 0.25rem;
+        }
+
+        .page-link {
+            min-width: 36px;
+            height: 36px;
+            padding: 0 0.5rem;
+            font-size: 0.9rem;
         }
     }
 </style>
@@ -267,7 +377,8 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="mb-0 page-title">👥 User Management</h2>
         <div class="pulse">
-            <span class="badge rounded-pill py-2 px-3" style="background-color: var(--persian-green); font-size: 0.9rem;">
+            <span class="badge rounded-pill py-2 px-3"
+                style="background-color: var(--persian-green); font-size: 0.9rem;">
                 Total Users: @Model.Count
             </span>
         </div>
@@ -305,7 +416,8 @@
                                 </td>
                                 <td>@user.Email</td>
                                 <td>
-                                    <span class="badge rounded-pill @(user.Role == "Admin" ? "badge-admin" : "badge-user") py-2">
+                                    <span
+                                        class="badge rounded-pill @(user.Role == "Admin" ? "badge-admin" : "badge-user") py-2">
                                         @user.Role
                                     </span>
                                 </td>
@@ -313,21 +425,23 @@
                                 <td>
                                     @if (user.Role == "Admin")
                                     {
-                                        <button disabled class="btn btn-sm btn-outline-secondary" title="Admin users cannot be deleted">
+                                        <button disabled class="btn btn-sm btn-outline-secondary"
+                                            title="Admin users cannot be deleted">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     }
                                     else
                                     {
-                                        <button data-bs-toggle="modal" data-bs-target="#@modalId" class="btn btn-sm btn-outline-danger" title="Delete user">
+                                        <button data-bs-toggle="modal" data-bs-target="#@modalId"
+                                            class="btn btn-sm btn-outline-danger" title="Delete user">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     }
                                 </td>
                             </tr>
 
-                            <!-- Delete User Modal -->
-                            <div class="modal fade" id="@modalId" tabindex="-1" aria-labelledby="@($"{modalId}_label")" aria-hidden="true">
+                            <div class="modal fade" id="@modalId" tabindex="-1" aria-labelledby="@($"{modalId}_label")"
+                                aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered">
                                     <div class="modal-content">
                                         <div class="modal-header">
@@ -342,7 +456,9 @@
                                                     <div class="modal-subtitle text-white-50">Confirm Account Deletion</div>
                                                 </div>
                                             </div>
-                                            <button type="button" class="btn-close btn-close-white position-absolute" style="top: 1.5rem; right: 1.5rem;" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            <button type="button" class="btn-close btn-close-white position-absolute"
+                                                style="top: 1.5rem; right: 1.5rem;" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
                                             <div class="d-flex align-items-center mb-4">
@@ -356,10 +472,13 @@
                                             </div>
                                             <div class="alert danger-alert border-0">
                                                 <div class="d-flex align-items-center">
-                                                    <i class="fas fa-exclamation-circle me-3" style="color: var(--danger-red); font-size: 1.5rem;"></i>
+                                                    <i class="fas fa-exclamation-circle me-3"
+                                                        style="color: var(--danger-red); font-size: 1.5rem;"></i>
                                                     <div>
-                                                        <strong class="d-block" style="color: var(--danger-red);">Irreversible Action</strong>
-                                                        <span class="text-muted">This will permanently delete the user account and all associated data from the system.</span>
+                                                        <strong class="d-block" style="color: var(--danger-red);">Irreversible
+                                                            Action</strong>
+                                                        <span class="text-muted">This will permanently delete the user account
+                                                            and all associated data from the system.</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -396,11 +515,101 @@
         </div>
     </div>
 </div>
+@if (ViewBag.TotalPages > 1)
+{
+    <div class="pagination-container animate-fade delay-2">
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                @if (ViewBag.CurrentPage > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage - 1)"
+                            aria-label="Previous">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link" aria-label="Previous">
+                            <i class="fas fa-chevron-left"></i>
+                        </span>
+                    </li>
+                }
+
+                @{
+                    int startPage = Math.Max(1, ViewBag.CurrentPage - 2);
+                    int endPage = Math.Min(ViewBag.TotalPages, ViewBag.CurrentPage + 2);
+
+                    if (startPage > 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" asp-action="Index" asp-route-page="1">1</a>
+                        </li>
+                        if (startPage > 2)
+                        {
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        }
+                    }
+
+                    for (int i = startPage; i <= endPage; i++)
+                    {
+                        if (i == ViewBag.CurrentPage)
+                        {
+                            <li class="page-item active" aria-current="page">
+                                <span class="page-link">@i</span>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="page-item">
+                                <a class="page-link" asp-action="Index" asp-route-page="@i">@i</a>
+                            </li>
+                        }
+                    }
+
+                    if (endPage < ViewBag.TotalPages)
+                    {
+                        if (endPage < ViewBag.TotalPages - 1)
+                        {
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        }
+                        <li class="page-item">
+                            <a class="page-link" asp-action="Index" asp-route-page="@ViewBag.TotalPages">@ViewBag.TotalPages</a>
+                        </li>
+                    }
+                }
+
+                @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage + 1)" aria-label="Next">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link" aria-label="Next">
+                            <i class="fas fa-chevron-right"></i>
+                        </span>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
+}
 
 @section Scripts {
     <script>
         // Add animation to table rows when page loads
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const rows = document.querySelectorAll('tbody tr');
             rows.forEach((row, index) => {
                 row.style.animationDelay = `${index * 0.05}s`;
@@ -416,9 +625,9 @@
         });
 
         // Modal icon animation
-        $('.modal').on('mouseenter', function() {
+        $('.modal').on('mouseenter', function () {
             $(this).find('.modal-icon-circle').css('transform', 'rotate(-15deg)');
-        }).on('mouseleave', function() {
+        }).on('mouseleave', function () {
             $(this).find('.modal-icon-circle').css('transform', 'rotate(0)');
         });
     </script>

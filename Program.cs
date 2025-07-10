@@ -44,7 +44,12 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    await IdentityInitializer.SeedAsync(services);
+    //Admin bilgilerini app settings'tan al
+    var config = services.GetRequiredService<IConfiguration>();
+    var adminEmail = config["AdminUser:Email"];
+    var adminPassword = config["AdminUser:Password"];
+
+    await IdentityInitializer.SeedAsync(services, adminEmail!, adminPassword!);
 }
 
 // Configure the HTTP request pipeline.

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 public class IdentityInitializer
 {
-    public static async Task SeedAsync(IServiceProvider serviceProvider)
+    public static async Task SeedAsync(IServiceProvider serviceProvider, string adminMail, string adminPassword)
     {
         var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
         var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
@@ -17,9 +17,6 @@ public class IdentityInitializer
                 await roleManager.CreateAsync(new IdentityRole(role));
             }
         }
-
-        string adminMail = "admin@gmail.com";
-        string adminPassword = "Admin14331611.";
 
         var adminUser = await userManager.FindByEmailAsync(adminMail);
         if (adminUser == null)

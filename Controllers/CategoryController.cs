@@ -16,15 +16,22 @@ public class CategoryController : Controller
     {
         _context = context;
     }
-    public ActionResult Index()
+    public ActionResult Index(int page=1)
     {
-        var categories = _context.Categories.Select(i => new CategoryGetModel
+        int pagesize = 8;
+        var totalCategories = _context.Categories.Count();
+        var categories = _context.Categories.OrderBy(i => i.Id)
+        .Skip((page - 1) * pagesize)
+        .Take(pagesize)
+        .Select(i => new CategoryGetModel
         {
             Id = i.Id,
             Name = i.Name,
             QuizCount = i.Quizzes.Count(),
             QuestionCount = i.Questions.Count()
         }).ToList();
+        ViewBag.TotalPages = (int)Math.Ceiling((double)totalCategories / pagesize);
+        ViewBag.CurrentPage = page;
         return View(categories);
     }
 

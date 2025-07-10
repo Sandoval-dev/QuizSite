@@ -19,17 +19,26 @@ public class QuizController : Controller
         _context = context;
     }
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult> Index()
+    public async Task<ActionResult> Index(int page = 1)
     {
+        int pageSize = 5; // Her sayfada 10 quiz gösterilecek
+        var totalQuizzes = await _context.Quizzes.CountAsync();
+
+
         var quizzes = await _context.Quizzes
         .Include(q => q.category) //Quiz ile ilişkili category nesnesini getirir.
         .Include(c => c.QuizQuestions) //Quiz ile ilişkili QuizQuestions ları getirir.
             .ThenInclude(qq => qq.Question) //Her bir QuizQuestion içindeki Question nesnesini getirir.
+            .OrderBy(q => q.Id)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
         .ToListAsync();
 
         //tüm quize ait question sayısı
         var totalQuestions = quizzes.Sum(q => q.QuizQuestions.Count());
         ViewBag.TotalQuestions = totalQuestions;
+        ViewBag.TotalPages = (int)Math.Ceiling((double)totalQuizzes / pageSize);
+        ViewBag.CurrentPage = page;
         return View(quizzes);
     }
 

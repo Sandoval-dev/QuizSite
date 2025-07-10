@@ -23,9 +23,17 @@ public class UserController : Controller
     }
 
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult> Index()
+    public async Task<ActionResult> Index(int page = 1)
     {
-        var users = await _userManager.Users.ToListAsync();
+        int pageSize = 10;
+        var totalUsers = _context.Users.Count();
+        var users = await _context.Users
+            .OrderBy(u => u.UserName)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        
 
         var userViewModels = new List<UserViewModel>();
 
@@ -43,6 +51,8 @@ public class UserController : Controller
                     : DateTime.Now // burada örnek olarak şimdi koyduk
             });
         }
+        ViewBag.TotalPages = (int)Math.Ceiling((double)totalUsers / pageSize);
+        ViewBag.CurrentPage = page;
         return View(userViewModels);
     }
 

@@ -1,1 +1,21 @@
-/appsettings.Production.json
+# Production ayar dosyası
+appsettings.Production.json
+
+# Kullanıcı ayarları
+*.user
+*.suo
+
+# .NET derleme dosyaları
+bin/
+obj/
+
+# IDE klasörleri
+.vscode/
+.vs/
+
+# Paketler
+*.nupkg
+packages/
+
+# Logs
+*.log

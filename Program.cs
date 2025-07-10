@@ -44,6 +44,9 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
+
+    var context = services.GetRequiredService<DataContext>();
+    context.Database.Migrate();
     //Admin bilgilerini app settings'tan al
     var config = services.GetRequiredService<IConfiguration>();
     var adminEmail = config["AdminUser:Email"];

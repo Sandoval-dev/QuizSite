@@ -2,11 +2,9 @@ services:
   - type: web
     name: quizsite
     runtime: dotnet
+    runtimeVersion: 9
     branch: main
     buildCommand: dotnet publish -c Release -o out
     startCommand: dotnet out/QuizSite.dll
-    envVars:
-      - key: DOTNET_VERSION
-        value: 9.0
     region: oregon
     plan: free

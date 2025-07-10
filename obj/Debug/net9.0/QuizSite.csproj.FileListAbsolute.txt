@@ -244,3 +244,17 @@ C:\QuizSite\obj\Debug\net9.0\ref\QuizSite.dll
 C:\QuizSite\obj\Debug\net9.0\compressed\i1w55siqpt-dexd4x94v3.gz
 C:\QuizSite\bin\Debug\net9.0\appsettings.Production.json
 C:\QuizSite\obj\Debug\net9.0\QuizSite.sourcelink.json
+C:\QuizSite\bin\Debug\net9.0\out\out\web.config
+C:\QuizSite\bin\Debug\net9.0\out\web.config
+C:\QuizSite\bin\Debug\net9.0\out\appsettings.Development.json
+C:\QuizSite\bin\Debug\net9.0\out\appsettings.json
+C:\QuizSite\bin\Debug\net9.0\out\appsettings.Production.json
+C:\QuizSite\bin\Debug\net9.0\out\out\appsettings.Development.json
+C:\QuizSite\bin\Debug\net9.0\out\out\appsettings.json
+C:\QuizSite\bin\Debug\net9.0\out\out\appsettings.Production.json
+C:\QuizSite\bin\Debug\net9.0\out\out\QuizSite.deps.json
+C:\QuizSite\bin\Debug\net9.0\out\out\QuizSite.runtimeconfig.json
+C:\QuizSite\bin\Debug\net9.0\out\out\QuizSite.staticwebassets.endpoints.json
+C:\QuizSite\bin\Debug\net9.0\out\QuizSite.deps.json
+C:\QuizSite\bin\Debug\net9.0\out\QuizSite.runtimeconfig.json
+C:\QuizSite\bin\Debug\net9.0\out\QuizSite.staticwebassets.endpoints.json

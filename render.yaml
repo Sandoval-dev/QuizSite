@@ -2,9 +2,11 @@ services:
   - type: web
     name: quizsite
     runtime: dotnet
-    runtimeVersion: 9
+    runtimeVersion: "9"
     branch: main
     buildCommand: dotnet publish -c Release -o out
     startCommand: dotnet out/QuizSite.dll
     region: oregon
     plan: free
+    build:
+      image: mcr.microsoft.com/dotnet/sdk:9.0

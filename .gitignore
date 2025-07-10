@@ -8,6 +8,7 @@ appsettings.Production.json
 # .NET derleme dosyaları
 bin/
 obj/
+out/
 
 # IDE klasörleri
 .vscode/

@@ -33,7 +33,7 @@ public class UserController : Controller
             .Take(pageSize)
             .ToListAsync();
 
-        
+
 
         var userViewModels = new List<UserViewModel>();
 
@@ -63,9 +63,22 @@ public class UserController : Controller
         var user = await _context.Users.FindAsync(id);
         if (user == null) return RedirectToAction("Index");
 
-        _context.Users.Remove(user);
+        var userId = user.Id;
+        var relatedQuizResults = _context.UserQuizResults.Where(qr => qr.UserId == userId);
+        _context.UserQuizResults.RemoveRange(relatedQuizResults);
+
         await _context.SaveChangesAsync();
-        TempData["SuccessMessage"] = "User deleted successfully";
+        var result = await _userManager.DeleteAsync(user);
+        if (result.Succeeded)
+        {
+            TempData["Message"] = "Kullanıcı başarıyla silindi.";
+            return RedirectToAction("Index");
+        }
+        foreach (var error in result.Errors)
+        {
+            ModelState.AddModelError("", error.Description);
+            TempData["Message"] = error.Description;
+        }
         return RedirectToAction("Index");
     }
 

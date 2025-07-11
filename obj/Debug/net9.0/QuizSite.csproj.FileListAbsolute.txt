@@ -258,3 +258,14 @@ C:\QuizSite\bin\Debug\net9.0\out\out\QuizSite.staticwebassets.endpoints.json
 C:\QuizSite\bin\Debug\net9.0\out\QuizSite.deps.json
 C:\QuizSite\bin\Debug\net9.0\out\QuizSite.runtimeconfig.json
 C:\QuizSite\bin\Debug\net9.0\out\QuizSite.staticwebassets.endpoints.json
+C:\QuizSite\bin\Debug\net9.0\Microsoft.Extensions.Caching.Abstractions.dll
+C:\QuizSite\bin\Debug\net9.0\Microsoft.Extensions.Caching.Memory.dll
+C:\QuizSite\bin\Debug\net9.0\Microsoft.Extensions.Configuration.Abstractions.dll
+C:\QuizSite\bin\Debug\net9.0\Microsoft.Extensions.DependencyInjection.dll
+C:\QuizSite\bin\Debug\net9.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+C:\QuizSite\bin\Debug\net9.0\Microsoft.Extensions.Logging.dll
+C:\QuizSite\bin\Debug\net9.0\Microsoft.Extensions.Logging.Abstractions.dll
+C:\QuizSite\bin\Debug\net9.0\Microsoft.Extensions.Options.dll
+C:\QuizSite\bin\Debug\net9.0\Microsoft.Extensions.Primitives.dll
+C:\QuizSite\bin\Debug\net9.0\Npgsql.dll
+C:\QuizSite\bin\Debug\net9.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll

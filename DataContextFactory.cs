@@ -7,7 +7,10 @@ public class DataContextFactory : IDesignTimeDbContextFactory<DataContext>
     public DataContext CreateDbContext(string[] args)
     {
         var optionsBuilder = new DbContextOptionsBuilder<DataContext>();
-        optionsBuilder.UseNpgsql("Host=db.vzgnxgkoivvnaagdnzlb.supabase.co;Database=postgres;Username=postgres;Password=KPjb3!&N!E5Z-gW;SSL Mode=Require;Trust Server Certificate=true");
+
+        var connectionString = "Host=vzgnxgkoivvnaagdnzlb.supabase.co;Port=5432;Database=postgres;Username=postgres;Password=KPjb3!&N!E5Z-gW;SSL Mode=Require;Trust Server Certificate=true";
+
+        optionsBuilder.UseNpgsql(connectionString);
 
         return new DataContext(optionsBuilder.Options);
     }

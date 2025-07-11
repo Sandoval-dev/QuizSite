@@ -18,7 +18,7 @@ builder.Services.AddSession(options =>
 builder.Services.AddDbContext<DataContext>(options =>
 {
     string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-    options.UseNpgsql(connectionString);
+    options.UseSqlite(connectionString);
 });
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
